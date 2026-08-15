@@ -14,6 +14,12 @@ out/
 # Azure
 .azure/
 
+# Next.js (create-next-app)
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+/coverage
+
 # Fase A1 — mirror/gate artifacts (grandes, não versionar)
 mirror-uol/
 

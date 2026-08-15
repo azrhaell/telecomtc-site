@@ -9,7 +9,7 @@
 //
 // Uso: node scripts/mirror-gate.mjs https://telecomtc.com.br
 
-import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { URL } from 'node:url';
 

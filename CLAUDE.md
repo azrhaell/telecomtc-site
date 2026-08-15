@@ -98,12 +98,30 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
   banco e dados de e-mail). `/oferta-sms/` e `/sample-page/` existem no
   banco mas foram descartados por decisão do usuário — não migram.
 
-## Pendência para a Fase A3 (layout.tsx)
-Preservar os 3 scripts de rastreamento globais do site atual (decisão do
-usuário em 2026-08-15, ver PLAN.md > Achados do backup):
-- Meta tag de verificação de domínio do Facebook Business
-- Loader do RD Station
-- Google tag (gtag.js, measurement ID G-0FFBNFM94W)
+## Stack real (Fase A3, 2026-08-15)
+- **Next.js 16.3.1**, não 15 como o runbook original assumia — era a
+  versão atual no momento da execução (`create-next-app@latest`).
+  Diferença que importa: `src/app/sitemap.ts` e `robots.ts` exigem
+  `export const dynamic = 'force-static'` com `output: 'export'`,
+  senão o build falha. `LayoutProps<'/'>` é o tipo novo pros props do
+  root layout.
+- Tailwind v4 (CSS-first, `@import 'tailwindcss'` em globals.css, sem
+  `tailwind.config.js`).
+- Scaffold gerado numa pasta temporária (`create-next-app` recusa
+  diretório não-vazio) e mesclado no repo — não usar
+  `--login-with-github` nem tentar rodar `create-next-app` direto na
+  raiz do projeto de novo.
+- Os 3 scripts de rastreamento globais (decisão do usuário 2026-08-15)
+  estão em `src/app/layout.tsx`: meta tag de verificação do Facebook
+  Business, loader do RD Station, Google tag (gtag.js, measurement ID
+  G-0FFBNFM94W).
+- Formulários (`ContactForm.tsx`, `JobApplicationForm.tsx`) usam
+  Web3Forms via `NEXT_PUBLIC_WEB3FORMS_KEY`. **Ação pendente do
+  usuário**: criar conta em web3forms.com e preencher essa env var
+  (`.env.example` documenta) — sem ela os formulários não enviam.
+- `eslint.config.mjs` ignora `mirror-uol/**` — sem isso o ESLint lintava
+  o JS de terceiros (jQuery, Elementor) baixado no crawl da Fase A1 e
+  gerava milhares de falsos positivos.
 
 ## Documentos de origem
 Os planos originais (com escopo mais amplo, incluindo o Projeto C que

@@ -79,12 +79,69 @@ Critério de saída (portão A→B): site 200 nos dois hostnames + smoke
 verde + regressão de e-mail sem divergência + 7 dias corridos estável +
 WordPress desinstalado da UOL.
 
-## Próximo passo: Fase A2 — Extração para Next.js
-Conteúdo-fonte confirmado: 3 páginas internas (`empresa`, `fale-conosco`,
-`servicos`) + home, extraídas do HTML renderizado já capturado em
-`mirror-uol/` (mais confiável que tentar converter o JSON serializado do
-Elementor automaticamente — ver CLAUDE.md > Ambiente). Ainda não
-iniciado.
+## Fase A2 — Extração para Next.js
+Status: CONCLUÍDA (2026-08-15)
+Conteúdo das 4 páginas (home, `empresa`, `servicos`, `fale-conosco`)
+extraído do HTML renderizado em `mirror-uol/` (não do JSON do Elementor
+— ver CLAUDE.md > Ambiente) e recriado manualmente como componentes
+Next.js. `wp-content/uploads/` movido para `public/` preservando os
+paths originais (só os ~20 arquivos referenciados pelas páginas reais).
+
+## Fase A3 — Next.js (scaffold, páginas, config)
+Status: CONCLUÍDA (2026-08-15)
+- Scaffold: Next.js 16.3.1 (não 15 — versão atual no momento da
+  execução), App Router, TypeScript, Tailwind v4, `src/` dir.
+  `create-next-app` rodado numa pasta temporária e mesclado no repo
+  (o diretório já tinha CLAUDE.md/PLAN.md/docs/scripts) — ver CLAUDE.md
+  > Ambiente para as diferenças em relação ao runbook original (Next 15
+  → 16: `sitemap.ts`/`robots.ts` agora exigem
+  `export const dynamic = 'force-static'` com `output: 'export'`).
+- `next.config.ts`: `output: 'export'`, `trailingSlash: true`,
+  `images.unoptimized: true` — como especificado.
+- Páginas: `/` (home com formulário de contato), `/empresa/`,
+  `/servicos/` (com anchors `#vivo-movel` etc. para os links "Saiba
+  mais" da home), `/fale-conosco/` (formulário de candidatura — o nome
+  da rota preserva a URL atual, mesmo a página sendo "Trabalhe
+  Conosco" no site atual, não "Fale Conosco" — ver achados da Fase
+  A1.4).
+- `layout.tsx`: header/footer compartilhados, canonicalização via
+  `metadataBase`, os 3 scripts de rastreamento preservados (decisão do
+  usuário — ver achados A1.4), ícones a partir dos
+  `cropped-vivo-1-1-*.png` já existentes.
+- Formulários: Web3Forms (`ContactForm.tsx`, `JobApplicationForm.tsx`),
+  client components. **Pendente do usuário**: criar conta em
+  web3forms.com e preencher `NEXT_PUBLIC_WEB3FORMS_KEY` em `.env.local`
+  (ver `.env.example`) — sem isso os formulários não enviam.
+- `sitemap.ts`, `robots.ts`, `not-found.tsx`, `staticwebapp.config.json`
+  do site (rotas 404 para wp-admin/wp-login/xmlrpc, redirect de
+  `/contato/` para `/` preservando o comportamento atual, CSP liberando
+  os domínios do Web3Forms/RD Station/Google).
+- **Build verificado**: `npm run build` gera `./out` sem erro — 5,1 MB,
+  63 arquivos (bem dentro do alvo 200 MB/12.000). `npm run lint` limpo
+  (precisou excluir `mirror-uol/**` do ESLint — sem isso ele lintava o
+  JS de terceiros baixado no crawl da Fase A1 e gerava milhares de
+  falsos positivos).
+- **Verificado visualmente** (Playwright + Chromium headless, instalado
+  só para este teste): as 4 páginas renderizam corretamente, imagens
+  reais carregando, formulários com os campos certos. Único item
+  observado: o RD Station injeta um botão flutuante de WhatsApp
+  sitewide — comportamento herdado do script original, não é bug.
+- **Todas as 25 URLs de `url-contract.txt` respondem 200** contra o
+  build local (`out/` servido via `serve`).
+
+Critério de saída (portão A→B): site 200 nos dois hostnames + smoke
+verde + regressão de e-mail sem divergência + 7 dias corridos estável +
+WordPress desinstalado da UOL.
+
+## Próximo passo: Fase A5 — Provisionar e publicar
+Falta: `az group create` + `az staticwebapp create` (Azure CLI já
+autenticado — ver CLAUDE.md > Ambiente); criar o repositório GitHub
+`azrhaell/telecomtc-site` (ainda não existe); workflow
+`azure-swa-site.yml`; gravar o deployment token como GitHub Secret;
+usuário precisa criar a chave do Web3Forms antes do formulário
+funcionar em produção. Zona `telecomtc.com.br` no Azure DNS e troca de
+NS ficam para a Fase A6, só depois do site validado por
+`*.azurestaticapps.net`.
 
 ## Projeto B — Redirect tctelecom.com.br
 Status: PENDENTE (depende do portão A→B)

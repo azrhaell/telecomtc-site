@@ -1,0 +1,17 @@
+{
+  "trailingSlash": "always",
+  "routes": [
+    { "route": "/wp-login.php", "statusCode": 404 },
+    { "route": "/wp-admin/*", "statusCode": 404 },
+    { "route": "/xmlrpc.php", "statusCode": 404 },
+    { "route": "/index.php", "redirect": "/", "statusCode": 301 },
+    { "route": "/contato/", "redirect": "/", "statusCode": 301 }
+  ],
+  "responseOverrides": { "404": { "rewrite": "/404.html" } },
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Content-Security-Policy": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.googletagmanager.com https://d335luupugsy2.cloudfront.net; form-action 'self' https://api.web3forms.com; connect-src 'self' https://api.web3forms.com https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'self'"
+  }
+}
