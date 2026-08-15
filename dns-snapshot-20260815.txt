@@ -1,0 +1,37 @@
+===== telecomtc.com.br =====
+NS: ["ns1.cpuh12.hospedagemuolhost.com.br","ns2.cpuh12.hospedagemuolhost.com.br"]
+MX: [{"exchange":"mx.uhserver.com","priority":10,"type":"MX"}]
+TXT: [["v=spf1 include:spf.whservidor.com ?all"],["v=spf1include:_spf.rdstation.com.brinclude:sendgrid.net~all"]]
+A: ["186.234.81.29"]
+CNAME www: ["telecomtc.com.br"]
+CNAME autodiscover: (CNAME autodiscover vazio ou erro: ENOTFOUND)
+CNAME selector1._domainkey: (CNAME selector1 vazio ou erro: ENOTFOUND)
+CNAME selector2._domainkey: (CNAME selector2 vazio ou erro: ENOTFOUND)
+TXT _dmarc: [["v=DMARC1"],["v=DMARC1; p=none;"]]
+
+===== tctelecom.com.br =====
+NS: ["ns4.bdm.microsoftonline.com","ns2.bdm.microsoftonline.com","ns3.bdm.microsoftonline.com","ns1.bdm.microsoftonline.com"]
+MX: [{"exchange":"tctelecom-com-br.mail.protection.outlook.com","priority":0,"type":"MX"}]
+TXT: [["mscid=6L3xup3zJyXGHkR2/bDUxUnaFpFj0DmkIVnkMbrrLE/RZR9eyFr02a7aGSLNt4JW7kHhiE4rZnNUpYJ8fHThiA=="],["v=spf1 include:spf.protection.outlook.com -all"]]
+A: (A vazio ou erro: ENODATA)
+CNAME www: ["telecomtc.com.br"]
+CNAME autodiscover: ["autodiscover.outlook.com"]
+CNAME selector1._domainkey: ["selector1-tctelecom-com-br._domainkey.tcrepresentacao.a-v1.dkim.mail.microsoft"]
+CNAME selector2._domainkey: ["selector2-tctelecom-com-br._domainkey.tcrepresentacao.a-v1.dkim.mail.microsoft"]
+TXT _dmarc: [["v=DMARC1; p=none; rua=mailto:dmarc@tctelecom.com.br; ruf=mailto:dmarc@tctelecom.com.br; rf=afrf; pct=100"]]
+
+===== hosts de serviço em telecomtc.com.br =====
+
+mail.telecomtc.com.br -> ["200.147.69.9"]
+
+webmail.telecomtc.com.br -> ["200.147.66.3"]
+
+smtp.telecomtc.com.br -> ["200.147.36.31"]
+
+pop.telecomtc.com.br -> ["200.147.69.9"]
+
+imap.telecomtc.com.br -> ["200.147.41.245"]
+
+pop3.telecomtc.com.br -> ["200.147.41.245"]
+
+smtps.telecomtc.com.br -> (A vazio ou erro: ENOTFOUND)

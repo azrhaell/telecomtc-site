@@ -60,9 +60,10 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
 | Domínio canônico | `https://telecomtc.com.br` (apex, sem www) |
 
 ## Ambiente (validado em 2026-08-15)
-- Windows, PowerShell + Git Bash. wget e dig NÃO instalados — usar curl +
-  Node.js para mirror/crawl (Fase A1), e Resolve-DnsName do PowerShell no
-  lugar de dig.
+- Windows, PowerShell + Git Bash. wget e dig NÃO instalados — substituídos
+  por scripts Node.js (`scripts/mirror-gate.mjs` usa `fetch`/`fs` no lugar
+  de wget; `scripts/dns-snapshot.mjs` usa `node:dns/promises` no lugar de
+  dig). Rodam via `node scripts/*.mjs`, sem dependências externas.
 - Node 24.16 local; workflows do GitHub Actions fixam Node 22 conforme
   runbook.
 - Azure CLI autenticado: subscription "Azure subscription 1", tenant
@@ -76,6 +77,21 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
 - Anomalias existentes a MIRROR, não corrigir: telecomtc.com.br tem dois
   TXT SPF e dois TXT _dmarc (um malformado, "v=DMARC1" sem policy).
   Espelhar verbatim na Fase A1.3/A6.1 — não consolidar nem "limpar".
+- Site é construído com Elementor + Elementor Pro (page builder), não
+  Gutenberg/editor clássico — conteúdo real é só 4 páginas (`/`,
+  `/empresa/`, `/fale-conosco/`, `/servicos/`), 6,7 MB total, 89 arquivos
+  no crawl. Elementor guarda o conteúdo em JSON serializado, não HTML
+  limpo — `wordpress-export-to-markdown` (A2.1) provavelmente não vai
+  converter bem; com só 4 páginas, recriar manualmente como
+  componentes/Markdown no Next.js tende a ser mais rápido que brigar com
+  conversão automática. Reavaliar quando o WXR chegar.
+- `url-contract.txt` é curado, não um dump cru do crawl: só páginas de
+  conteúdo + mídia enviada (`wp-content/uploads/AAAA/MM/**`). Ativos de
+  implementação do WP/Elementor (plugins, tema, wp-includes, CSS
+  auto-gerado do Elementor por post em `wp-content/uploads/elementor/`)
+  ficam em `mirror-crawl-full.txt`, fora do contrato — eles não vão
+  existir no site Next.js, então não fazem sentido no smoke test (A6.4)
+  nem no gerador de redirect (B2).
 
 ## Documentos de origem
 Os planos originais (com escopo mais amplo, incluindo o Projeto C que
