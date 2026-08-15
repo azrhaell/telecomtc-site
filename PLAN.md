@@ -134,7 +134,7 @@ verde + regressão de e-mail sem divergência + 7 dias corridos estável +
 WordPress desinstalado da UOL.
 
 ## Fase A5 — Provisionar e publicar
-Status: QUASE CONCLUÍDA (2026-08-15) — falta só os 2 GitHub Secrets
+Status: CONCLUÍDA (2026-08-15)
 
 - [x] Chave do Web3Forms recebida (`92de5971-49f0-4f20-932a-db295642a1d7`)
       — em `.env.local` (gitignored) e pronta para virar GitHub Secret.
@@ -161,19 +161,39 @@ Status: QUASE CONCLUÍDA (2026-08-15) — falta só os 2 GitHub Secrets
       eastus2 --sku Free` — criado. Hostname:
       `gentle-field-06f152f0f.7.azurestaticapps.net`.
 - [x] Deployment token obtido via `az staticwebapp secrets list`.
-- [ ] **Ação do usuário — falta só isso**: adicionar 2 GitHub Secrets em
-      Settings → Secrets and variables → Actions do repositório:
-      - `AZURE_SWA_TOKEN_SITE` = (deployment token, entregue ao usuário
-        no chat — não fica salvo em texto claro nos arquivos do
-        projeto)
-      - `NEXT_PUBLIC_WEB3FORMS_KEY` = `92de5971-49f0-4f20-932a-db295642a1d7`
-- [ ] Depois dos secrets: re-disparar o workflow (push vazio ou
-      "Re-run all jobs"), confirmar `gentle-field-06f152f0f.7.azurestaticapps.net`
-      respondendo 200 nas 4 rotas.
+- [x] Usuário adicionou os 2 GitHub Secrets (`AZURE_SWA_TOKEN_SITE`,
+      `NEXT_PUBLIC_WEB3FORMS_KEY`) em Settings → Secrets and variables
+      → Actions.
+- [x] Workflow disparado via `workflow_dispatch` (API, usando o token
+      OAuth do próprio git credential manager local — mesmo usado pro
+      `git push`, sem escalar privilégio) — run concluído com sucesso
+      (id 31915738235).
+- [x] **Site validado ao vivo em
+      `https://gentle-field-06f152f0f.7.azurestaticapps.net`**: as 4
+      rotas (`/`, `/empresa/`, `/servicos/`, `/fale-conosco/`)
+      respondem 200, título correto, logo carregando, chave do
+      Web3Forms confirmada presente no HTML servido (veio do secret via
+      CI, não do `.env.local`). Todas as 25 URLs de `url-contract.txt`
+      respondem 200 contra essa URL.
+- [x] Produção (`telecomtc.com.br`, UOL) confirmada intocada — segue
+      200 normalmente.
 
-Zona `telecomtc.com.br` no Azure DNS e troca de NS ficam para a Fase
-A6, só depois do site validado por
-`gentle-field-06f152f0f.7.azurestaticapps.net`.
+**Critério de saída da Fase A5 atendido**: site funciona integralmente
+pela URL `*.azurestaticapps.net`, produção ainda 100% na UOL.
+
+## Fase A6 — Zona DNS, cutover e validação
+Status: PENDENTE — não iniciada.
+
+Vai envolver: popular a zona `telecomtc.com.br` no Azure DNS como
+espelho verbatim do snapshot (`dns-snapshot-20260815.txt`, incluindo as
+anomalias de SPF/DMARC já documentadas — não corrigir), adicionar só o
+alias A no apex + CNAME `www` → SWA, escrever
+`scripts/mail-regression.sh` **antes** de qualquer mudança de DNS, e só
+depois disso pedir para o usuário trocar os NS no registro.br (TTL 300s
+72h antes). É o primeiro passo com potencial de afetar e-mail em
+produção (mesmo que só por erro de espelhamento) — confirmar com o
+usuário antes de começar, não assumir sinal verde automático só porque
+a A5 terminou bem.
 
 ## Projeto B — Redirect tctelecom.com.br
 Status: PENDENTE (depende do portão A→B)
