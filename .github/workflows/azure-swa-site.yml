@@ -8,6 +8,7 @@ on:
     types: [opened, synchronize, reopened, closed]
     branches: [main]
     paths-ignore: ['redirect/**', '*.md']
+  workflow_dispatch: {}
 
 jobs:
   build_and_deploy:
