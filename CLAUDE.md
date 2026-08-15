@@ -92,6 +92,18 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
   ficam em `mirror-crawl-full.txt`, fora do contrato — eles não vão
   existir no site Next.js, então não fazem sentido no smoke test (A6.4)
   nem no gerador de redirect (B2).
+- Backup completo da conta cPanel da UOL recebido e analisado em
+  2026-08-15 (satisfaz A1.4 — ver PLAN.md para achados completos).
+  Extraído fora do repo/OneDrive, nunca commitado (tem credenciais de
+  banco e dados de e-mail). `/oferta-sms/` e `/sample-page/` existem no
+  banco mas foram descartados por decisão do usuário — não migram.
+
+## Pendência para a Fase A3 (layout.tsx)
+Preservar os 3 scripts de rastreamento globais do site atual (decisão do
+usuário em 2026-08-15, ver PLAN.md > Achados do backup):
+- Meta tag de verificação de domínio do Facebook Business
+- Loader do RD Station
+- Google tag (gtag.js, measurement ID G-0FFBNFM94W)
 
 ## Documentos de origem
 Os planos originais (com escopo mais amplo, incluindo o Projeto C que
