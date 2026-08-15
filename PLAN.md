@@ -133,14 +133,44 @@ Critério de saída (portão A→B): site 200 nos dois hostnames + smoke
 verde + regressão de e-mail sem divergência + 7 dias corridos estável +
 WordPress desinstalado da UOL.
 
-## Próximo passo: Fase A5 — Provisionar e publicar
-Falta: `az group create` + `az staticwebapp create` (Azure CLI já
-autenticado — ver CLAUDE.md > Ambiente); criar o repositório GitHub
-`azrhaell/telecomtc-site` (ainda não existe); workflow
-`azure-swa-site.yml`; gravar o deployment token como GitHub Secret;
-usuário precisa criar a chave do Web3Forms antes do formulário
-funcionar em produção. Zona `telecomtc.com.br` no Azure DNS e troca de
-NS ficam para a Fase A6, só depois do site validado por
+## Fase A5 — Provisionar e publicar
+Status: BLOQUEADA (2026-08-15) — assinatura Azure desabilitada
+
+- [x] Chave do Web3Forths recebida (`92de5971-49f0-4f20-932a-db295642a1d7`)
+      — em `.env.local` (gitignored) e pronta para virar GitHub Secret.
+- [x] Repositório GitHub criado pelo usuário
+      (`https://github.com/azrhaell/telecomtc-site`). Tinha um commit
+      inicial (LICENSE MIT + README) feito pela UI do GitHub — mesclado
+      com `--allow-unrelated-histories`, sem conflito.
+- [x] Código empurrado para `origin/main` (5 commits do projeto + o
+      merge do commit inicial).
+- [x] `.github/workflows/azure-swa-site.yml` criado e commitado —
+      pré-builda no próprio workflow (Node 22) em vez de depender do
+      Oryx, `skip_app_build: true`. Vai falhar até os secrets abaixo
+      existirem no repo.
+- [ ] **BLOQUEADO**: `az group create -n rg-tctelecom -l eastus2` falhou
+      com `ReadOnlyDisabledSubscription` — a subscription
+      `ea3426a8-9e71-4eee-a507-d45733895f6e` ("Azure subscription 1")
+      está desabilitada para escrita. `az account list` mostra
+      `State: Enabled` (nível Azure AD), mas o estado de
+      billing/gasto da subscription em si está suspenso — precisa ser
+      reativado no portal (portal.azure.com → Cost Management +
+      Billing, ou o banner de "Reativar assinatura" que aparece no
+      Overview da subscription). **Ação do usuário** — não é algo que
+      dá para contornar via CLI.
+- [ ] Depois de reativada: `az group create` + `az staticwebapp create`
+      (sem `--login-with-github`) + `az staticwebapp secrets list` para
+      pegar o deployment token.
+- [ ] Usuário adiciona 2 GitHub Secrets em Settings → Secrets and
+      variables → Actions: `AZURE_SWA_TOKEN_SITE` (deployment token,
+      ainda não obtido) e `NEXT_PUBLIC_WEB3FORMS_KEY`
+      (`92de5971-49f0-4f20-932a-db295642a1d7`, já pode ser adicionado
+      agora, não depende do Azure).
+- [ ] Re-disparar o workflow depois dos secrets, confirmar `*.azurestaticapps.net`
+      respondendo 200 nas 4 rotas.
+
+Zona `telecomtc.com.br` no Azure DNS e troca de NS ficam para a Fase
+A6, só depois do site validado por
 `*.azurestaticapps.net`.
 
 ## Projeto B — Redirect tctelecom.com.br
