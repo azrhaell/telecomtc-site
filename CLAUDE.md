@@ -58,6 +58,7 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
 | SWA do redirect | `swa-tctelecom-redirect` |
 | Repositório | `azrhaell/telecomtc-site` |
 | Domínio canônico | `https://telecomtc.com.br` (apex, sem www) |
+| Hostname do SWA (site), pré-DNS | `gentle-field-06f152f0f.7.azurestaticapps.net` |
 
 ## Ambiente (validado em 2026-08-15)
 - Windows, PowerShell + Git Bash. wget e dig NÃO instalados — substituídos
@@ -66,11 +67,20 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
   dig). Rodam via `node scripts/*.mjs`, sem dependências externas.
 - Node 24.16 local; workflows do GitHub Actions fixam Node 22 conforme
   runbook.
-- Azure CLI autenticado: subscription "Azure subscription 1", tenant
-  azrhaell700hotmail.onmicrosoft.com — bate com a convenção de nomes
-  (azrhaell/telecomtc-site).
-- gh CLI não instalado. Repositório GitHub azrhaell/telecomtc-site ainda
-  NÃO existe (checado em 2026-08-15) — criar antes da Fase A5.
+- **Conta Azure correta: marcelo.lobo@tctelecom.com.br**, subscription
+  `429399fe-5db9-4e28-af3c-76528296c5db` ("Azure subscription 1",
+  tenant "TC REPRESENTACAO COMERCIAL LTDA", domínio tctelecom.com.br).
+  **Cuidado**: a conta azrhaell700@hotmail.com (subscription
+  `ea3426a8-...`) também estava autenticada nesta máquina e parecia
+  correta por coincidência de nome com o repositório GitHub
+  (azrhaell/telecomtc-site) — mas é a conta errada, estava desabilitada
+  para escrita. Confirmado pelo usuário em 2026-08-15. Se `az account
+  show` não mostrar marcelo.lobo@tctelecom.com.br, rodar `az login
+  --use-device-code` e reautenticar antes de qualquer operação de
+  escrita no Azure.
+- gh CLI não instalado. Repositório GitHub `azrhaell/telecomtc-site`
+  existe (criado pelo usuário em 2026-08-15, com LICENSE MIT + README
+  iniciais — mesclados no histórico do projeto).
 - Estado DNS/HTTP confirmado ao vivo em 2026-08-15: telecomtc.com.br em
   NS/MX da UOL, servindo WordPress/PHP 7.4.33 (200 ao vivo);
   tctelecom.com.br em NS da Microsoft, MX Exchange Online, sem site.
