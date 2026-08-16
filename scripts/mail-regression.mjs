@@ -91,10 +91,17 @@ for (const domain of DOMAINS) {
   const live = await liveRecords(domain);
 
   for (const field of ['MX', 'TXT', 'CNAME autodiscover', 'CNAME selector1._domainkey', 'CNAME selector2._domainkey', 'TXT _dmarc']) {
-    const exp = expected[field];
-    const got = live[field];
+    // Na raiz convivem TXT que não são de e-mail (tokens de verificação de
+    // domínio do Azure/Google/Facebook etc.). O que este teste protege é o
+    // SPF — então compara só os registros `v=spf1`, e ignora o resto. Sem
+    // isso, adicionar um token legítimo viraria falso positivo, e um teste
+    // que grita por qualquer coisa acaba sendo ignorado quando importa.
+    const isRootTxt = field === 'TXT';
+    const onlySpf = (v) => (Array.isArray(v) ? v.filter((r) => (Array.isArray(r) ? r.join('') : String(r)).startsWith('v=spf1')) : v);
+    const exp = isRootTxt ? onlySpf(expected[field]) : expected[field];
+    const got = isRootTxt ? onlySpf(live[field]) : live[field];
     const ok = sameSet(exp, got);
-    console.log(`  ${ok ? 'OK  ' : 'FAIL'} ${field}`);
+    console.log(`  ${ok ? 'OK  ' : 'FAIL'} ${isRootTxt ? 'TXT (só SPF)' : field}`);
     if (!ok) {
       console.log(`       esperado: ${JSON.stringify(exp)}`);
       console.log(`       ao vivo:  ${JSON.stringify(got)}`);
