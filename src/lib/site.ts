@@ -1,4 +1,7 @@
-export const SITE_URL = 'https://telecomtc.com.br';
+// Domínio canônico do site. Passou de telecomtc.com.br para tctelecom.com.br em
+// 2026-08-16 — ver docs/ADR-004. Atenção: o e-mail de contato (CONTACT.email,
+// abaixo) continua sendo @telecomtc.com.br; são coisas diferentes.
+export const SITE_URL = 'https://tctelecom.com.br';
 
 // Paleta real do site original (extraída do CSS do Elementor em
 // mirror-uol/.../wp-content/uploads/elementor/css/post-{4,613,436,266,167}.css)

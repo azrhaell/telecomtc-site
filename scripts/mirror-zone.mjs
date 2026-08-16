@@ -22,7 +22,9 @@
 import { readFileSync } from 'node:fs';
 
 const [zonePath, zoneName, resourceGroup, currentPath] = process.argv.slice(2);
-const TTL = 300;
+// O TTL não é definido aqui: `--ttl` não é aceito por todos os `add-record`
+// (o de SRV recusa), então ele é normalizado num passo separado depois de
+// tudo criado — ver PLAN.md, A6.1-bis.
 
 if (!zonePath || !zoneName || !resourceGroup || !currentPath) {
   console.error('uso: mirror-zone.mjs <zonefile> <zona> <resource-group> <estado-atual.json>');
