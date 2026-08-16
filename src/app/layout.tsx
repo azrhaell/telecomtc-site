@@ -1,9 +1,22 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { Bree_Serif, Montserrat } from 'next/font/google';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CookieBanner from '@/components/CookieBanner';
 import { SITE_URL } from '@/lib/site';
 import './globals.css';
+
+const breeSerif = Bree_Serif({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-bree-serif',
+});
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  variable: '--font-montserrat',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -28,11 +41,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="pt-BR">
-      <body className="flex min-h-screen flex-col font-sans text-zinc-900 antialiased">
+    <html lang="pt-BR" className={`${breeSerif.variable} ${montserrat.variable}`}>
+      <body className="flex min-h-screen flex-col font-[var(--font-montserrat)] text-zinc-900 antialiased">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <CookieBanner />
 
         {/* RD Station — loader de automação de marketing (carregado em todo o site na versão anterior) */}
         <Script

@@ -1,25 +1,37 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import JobApplicationForm from '@/components/JobApplicationForm';
 
 export const metadata: Metadata = {
   title: 'Trabalhe Conosco',
-  description: 'Faça parte do time TC Telecom. Envie sua candidatura para nossas vagas comerciais.',
+  description:
+    'Faça parte do time TC Telecom. Envie sua candidatura para nossas vagas comerciais e comece sua carreira com a gente.',
   alternates: { canonical: './' },
 };
 
 export default function TrabalheConoscoPage() {
   return (
-    <>
-      <section className="bg-gradient-to-br from-[#4a0072] to-[#7c2ae8] py-16 text-center text-white">
-        <h1 className="text-3xl font-extrabold uppercase sm:text-4xl">Trabalhe Conosco</h1>
-        <p className="mt-3 text-lg text-purple-100">Venha fazer parte do time TC Telecom.</p>
-      </section>
+    <section className="bg-black">
+      <div className="mx-auto max-w-6xl px-4 pt-10 pb-6 text-center sm:px-6 md:pt-14">
+        <h1 className="neon-text font-heading text-5xl sm:text-6xl md:text-7xl">Trabalhe Conosco</h1>
+      </div>
 
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-14 sm:px-6 md:grid-cols-2 md:items-start md:gap-8 md:pb-20">
+        <div className="relative mx-auto hidden aspect-[4/5] w-full max-w-md md:block lg:max-w-lg">
+          <Image
+            src="/wp-content/uploads/2022/04/tc-job-2.png"
+            alt="Trabalhe Conosco - TC Telecom"
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-contain"
+            priority
+          />
+        </div>
+
+        <div>
           <JobApplicationForm />
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

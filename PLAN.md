@@ -181,6 +181,37 @@ Status: CONCLUÍDA (2026-08-15)
 **Critério de saída da Fase A5 atendido**: site funciona integralmente
 pela URL `*.azurestaticapps.net`, produção ainda 100% na UOL.
 
+## Correção de fidelidade visual (2026-08-15, pós-A5)
+Status: CONCLUÍDA
+
+Usuário apontou que o site publicado ficou visualmente diferente do
+original — a Fase A2/A3 tinha extraído o conteúdo certo mas
+reconstruído com paleta/tipografia/composição inventadas, não a
+aparência real do site. Corrigido:
+
+- Paleta e tipografia reais extraídas do CSS do Elementor (não
+  inventadas) — ver CLAUDE.md > Ambiente para os valores exatos (roxo
+  `#65009F`, rosa neon `#FF0096`, fonte de título "Bree Serif").
+- **Achado importante**: `scripts/mirror-gate.mjs` (Fase A1) só segue
+  `href`/`src`/`srcset` de HTML — não segue `background-image:url()`
+  do CSS nem galerias de slideshow do Elementor. Isso deixou de fora
+  ~11 imagens de fundo reais (incluindo o hero inteiro da home, que é
+  um slideshow de 3 banners prontos com texto já embutido nas
+  imagens). Baixadas manualmente e adicionadas a `url-contract.txt`.
+  Detalhe técnico completo em CLAUDE.md > Ambiente.
+- 4 páginas reescritas via workflow paralelo (4 agentes, 1 por página)
+  com specs precisas de cor/fonte/imagem/copy; 1 retry necessário (erro
+  de conexão da API, não do conteúdo). Componentes novos:
+  `CookieBanner.tsx` (banner de cookies LGPD, existia no original e
+  tinha ficado de fora), `HeroSlideshow.tsx` (carrossel de 3 banners da
+  home).
+- Verificação: build limpo, lint limpo, as 25 URLs do contrato
+  (atualizado) respondem 200, screenshots das 4 páginas comparados
+  lado a lado com o original — bateram bem. Sem erros de console além
+  do 400 esperado do RD Station rejeitando origem localhost.
+- Deploy: push para main, workflow do GitHub Actions publica
+  automaticamente.
+
 ## Fase A6 — Zona DNS, cutover e validação
 Status: PENDENTE — não iniciada.
 

@@ -3,14 +3,42 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --brand-purple: #65009f;
+  --brand-purple-dark: #4e196c;
+  --brand-pink: #ff0096;
+  --brand-whatsapp: #25d366;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-purple-dark: var(--brand-purple-dark);
+  --color-brand-pink: var(--brand-pink);
+  --color-brand-whatsapp: var(--brand-whatsapp);
+  --font-heading: var(--font-bree-serif);
+  --font-body: var(--font-montserrat);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* Título com efeito neon (glow rosa), usado em seções "FALE CONOSCO" / "Trabalhe Conosco" */
+.neon-text {
+  color: #ffffff;
+  text-shadow:
+    0 0 4px var(--brand-pink),
+    0 0 10px var(--brand-pink),
+    0 0 22px var(--brand-pink),
+    2px 2px 0 var(--brand-pink);
+}
+
+/* Aproximação estática do padrão de "rede/partículas" (Elementor particles.js) usado
+   nos fundos magenta — pontos + linhas finas repetidos via SVG de fundo. */
+.network-pattern {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.35) 1px, transparent 1.5px);
+  background-size: 28px 28px;
 }

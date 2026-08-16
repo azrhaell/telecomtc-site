@@ -102,6 +102,20 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
   ficam em `mirror-crawl-full.txt`, fora do contrato — eles não vão
   existir no site Next.js, então não fazem sentido no smoke test (A6.4)
   nem no gerador de redirect (B2).
+- **Falha conhecida do `scripts/mirror-gate.mjs` (Fase A1), achada em
+  2026-08-15**: ele só segue `href=`/`src=`/`srcset=` de tags HTML — não
+  segue `background-image:url()` do CSS nem galerias de slideshow do
+  Elementor (`data-settings` com `background_slideshow_gallery`). Isso
+  fez o site publicado na Fase A3 sair sem várias imagens de fundo reais
+  (hero da home é um slideshow de 3 banners prontos —
+  `banner-site-temp-consertado.png`/`banner-3-vivo-fibra.jpg`/`45g.jpg`
+  —, hero de `/empresa/` é `foto-tc-cortada-e-cor-REDUX-scaled.jpg`,
+  hero de `/servicos/` é `banner-site-servicos-2.png`, etc.) e o
+  resultado ficou visualmente bem diferente do original — o usuário
+  pegou isso em 2026-08-15. Corrigido manualmente (imagens baixadas
+  direto da URL, adicionadas a `url-contract.txt`). Se o crawler for
+  reusado (ex.: Projeto B), considerar também parsear `url()` do CSS e
+  `data-settings` do Elementor antes de confiar cegamente no resultado.
 - Backup completo da conta cPanel da UOL recebido e analisado em
   2026-08-15 (satisfaz A1.4 — ver PLAN.md para achados completos).
   Extraído fora do repo/OneDrive, nunca commitado (tem credenciais de

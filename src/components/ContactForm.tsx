@@ -4,6 +4,9 @@ import { FormEvent, useState } from 'react';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
+const inputClass =
+  'w-full rounded-md border-2 border-brand-pink bg-white px-4 py-2.5 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-brand-pink';
+
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>('idle');
 
@@ -39,66 +42,51 @@ export default function ContactForm() {
       <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
 
       <div className="sm:col-span-1">
-        <label htmlFor="name" className="mb-1 block text-sm font-medium text-zinc-700">
-          Seu Nome
+        <label htmlFor="name" className="mb-1 block text-sm font-medium text-white">
+          Nome <span className="text-brand-pink">*</span>
         </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          className="w-full rounded-md border border-zinc-300 px-4 py-2.5 focus:border-[#4a0072] focus:outline-none"
-        />
+        <input id="name" name="name" type="text" placeholder="Seu Nome" required className={inputClass} />
       </div>
 
       <div className="sm:col-span-1">
-        <label htmlFor="phone" className="mb-1 block text-sm font-medium text-zinc-700">
-          Seu Telefone
+        <label htmlFor="phone" className="mb-1 block text-sm font-medium text-white">
+          Telefone <span className="text-brand-pink">*</span>
         </label>
-        <input
-          id="phone"
-          name="phone"
-          type="tel"
-          required
-          className="w-full rounded-md border border-zinc-300 px-4 py-2.5 focus:border-[#4a0072] focus:outline-none"
-        />
+        <input id="phone" name="phone" type="tel" placeholder="Seu Telefone" required className={inputClass} />
       </div>
 
       <div className="sm:col-span-1">
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-700">
-          Seu E-mail
+        <label htmlFor="email" className="mb-1 block text-sm font-medium text-white">
+          E-mail <span className="text-brand-pink">*</span>
         </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          className="w-full rounded-md border border-zinc-300 px-4 py-2.5 focus:border-[#4a0072] focus:outline-none"
-        />
+        <input id="email" name="email" type="email" placeholder="Seu E-mail" required className={inputClass} />
       </div>
 
       <div className="sm:col-span-1">
-        <label htmlFor="cnpj" className="mb-1 block text-sm font-medium text-zinc-700">
-          Seu CNPJ
+        <label htmlFor="company" className="mb-1 block text-sm font-medium text-white">
+          Empresa
         </label>
-        <input
-          id="cnpj"
-          name="cnpj"
-          type="text"
-          className="w-full rounded-md border border-zinc-300 px-4 py-2.5 focus:border-[#4a0072] focus:outline-none"
-        />
+        <input id="company" name="company" type="text" placeholder="Seu CNPJ" className={inputClass} />
+      </div>
+
+      <div className="sm:col-span-1">
+        <label htmlFor="cnpj" className="mb-1 block text-sm font-medium text-white">
+          CNPJ
+        </label>
+        <input id="cnpj" name="cnpj" type="text" placeholder="Seu CNPJ" className={inputClass} />
       </div>
 
       <div className="sm:col-span-2">
-        <label htmlFor="message" className="mb-1 block text-sm font-medium text-zinc-700">
-          Sua Mensagem
+        <label htmlFor="message" className="mb-1 block text-sm font-medium text-white">
+          Como podemos ajudar?
         </label>
         <textarea
           id="message"
           name="message"
           rows={4}
+          placeholder="Sua Mensagem"
           required
-          className="w-full rounded-md border border-zinc-300 px-4 py-2.5 focus:border-[#4a0072] focus:outline-none"
+          className={inputClass}
         />
       </div>
 
@@ -106,15 +94,15 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={status === 'submitting'}
-          className="w-full rounded-full bg-[#4a0072] px-6 py-3 font-bold text-white transition-colors hover:bg-[#3a005c] disabled:opacity-60 sm:w-auto"
+          className="w-full rounded-full border-2 border-white bg-transparent px-8 py-3 font-bold uppercase text-white transition-colors hover:bg-white hover:text-black disabled:opacity-60 sm:w-auto"
         >
-          {status === 'submitting' ? 'Enviando...' : 'Enviar mensagem'}
+          {status === 'submitting' ? 'Enviando...' : 'Solicitar Orçamento'}
         </button>
         {status === 'success' && (
-          <p className="mt-3 text-sm font-medium text-green-700">Mensagem enviada! Em breve entraremos em contato.</p>
+          <p className="mt-3 text-sm font-medium text-green-400">Mensagem enviada! Em breve entraremos em contato.</p>
         )}
         {status === 'error' && (
-          <p className="mt-3 text-sm font-medium text-red-700">
+          <p className="mt-3 text-sm font-medium text-red-400">
             Não foi possível enviar agora. Tente novamente ou fale conosco pelo WhatsApp.
           </p>
         )}
