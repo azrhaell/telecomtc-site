@@ -65,14 +65,14 @@ export default function Header() {
             <Image
               src="/wp-content/uploads/2022/02/vivo-empresas-parceiro-autorizado.png"
               alt="Vivo Empresas — Parceiro Autorizado"
-              width={140}
-              height={56}
+              width={135}
+              height={69}
               priority
-              className="h-10 w-auto transition-transform hover:scale-[1.04]"
+              className="h-[69px] w-auto transition-transform hover:scale-[1.04]"
             />
           </Link>
 
-          <nav className="hidden items-center gap-6 text-sm font-semibold tracking-wide md:flex">
+          <nav className="hidden items-center gap-6 text-base font-medium tracking-wide md:flex">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
@@ -95,7 +95,7 @@ export default function Header() {
               href={CONTACT.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-full bg-brand-whatsapp px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              className="flex items-center gap-2 rounded-full bg-brand-whatsapp px-4 py-2 text-[15px] font-medium uppercase text-white transition-opacity hover:opacity-90"
             >
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
                 <path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-3-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1s-.7.8-.9 1c-.2.2-.3.2-.6.1a6.6 6.6 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5L9 8.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.3s1 2.6 1.1 2.8c.1.2 2 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.6 1.8-1.3.2-.6.2-1.2.1-1.3-.1-.1-.3-.2-.5-.3Z" />
@@ -106,9 +106,9 @@ export default function Header() {
               <Image
                 src="/wp-content/uploads/2022/02/LOGO-BRANCA.png"
                 alt="TC Telecom"
-                width={130}
-                height={36}
-                className="h-8 w-auto"
+                width={207}
+                height={78}
+                className="h-[78px] w-auto"
               />
             </Link>
           </div>

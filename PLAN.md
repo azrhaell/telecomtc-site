@@ -249,6 +249,31 @@ disparar os IntersectionObserver) conferidos nas 4 páginas — nenhum
 conteúdo preso invisível, nav ativo correto por rota, partículas
 renderizando. Sem erro de console novo.
 
+## Correção de header (2026-08-15, pós-animações)
+Status: CONCLUÍDA
+
+Usuário reportou que o clone continuava visualmente divergente do
+original, principalmente no Hero. Comparação lado a lado (screenshot +
+medição via `getBoundingClientRect`/`getComputedStyle` no DOM real dos
+dois sites, não só visual) achou a causa raiz — não era o Hero em si,
+era o **Header** acima dele, que compacta toda a composição do topo:
+
+| Elemento | Original (medido) | Clone (antes) | Causa |
+|---|---|---|---|
+| Logo esquerda (Vivo Empresas) | 135×69px | 78×40px | `h-10` fixo demais |
+| Logo direita (TC Telecom) | 207×78px | 130×32px (`h-8`) | idem |
+| Fonte do menu | 16px | 14px (`text-sm`) | classe errada |
+| Botão "FALE CONOSCO" | texto literal maiúsculo no HTML original | "Fale Conosco" | case errado |
+
+Corrigido em `Header.tsx`: `h-[69px]`/`h-[78px]` nos dois logos (width/
+height do `next/image` ajustados para bater com o tamanho real
+renderizado), `text-base` no menu, `uppercase` no botão do WhatsApp.
+Header shared entre as 4 páginas, então o fix vale para todas.
+
+Verificado por medição (não só olho): logos agora 135×69 e 207×78,
+batendo exato com o original; fonte do menu 16px; botão com
+`text-transform: uppercase`. Build/lint limpos, 25 URLs 200, publicado.
+
 ## Fase A6 — Zona DNS, cutover e validação
 Status: PENDENTE — não iniciada.
 
