@@ -383,6 +383,18 @@ hospedado na Microsoft em `ns[1-4].bdm.microsoftonline.com`), e o
 Projeto B move essa hospedagem de DNS para o Azure. Espelho errado =
 e-mail principal quebrado. Isso é risco igual ou maior que o do Projeto A.
 
+**DKIM confirmado na fonte de verdade (2026-08-16).** `Get-DkimSigningConfig
+-Identity tctelecom.com.br` no Exchange Online devolveu `Enabled: True` e os
+dois selectors, conferidos em três vias (Exchange × DNS ao vivo × snapshot) —
+todos idênticos:
+`selector{1,2}-tctelecom-com-br._domainkey.tcrepresentacao.a-v1.dkim.mail.microsoft`
+
+O `Enabled: True` importa: o DKIM está assinando de verdade, então se os dois
+CNAMEs quebrarem no cutover do Projeto B, o e-mail de saída do domínio
+principal perde a assinatura e a entregabilidade cai (risco de cair em spam)
+— sem erro visível. O espelho desses dois registros é load-bearing, não
+decorativo.
+
 Esperar dias não mitigava isso. O que mitiga:
 - espelho verbatim do snapshot (MX, SPF, autodiscover, DKIM selector1 e
   selector2, `_dmarc`) — o `dns-snapshot-20260815.txt` já tem todos
