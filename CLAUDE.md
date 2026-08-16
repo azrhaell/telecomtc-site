@@ -22,10 +22,17 @@ Projeto C do runbook original (onboarding de @telecomtc.com.br no M365,
 cutover de MX, cancelamento da UOL) NÃO será executado. Ver docs/ADR-003.
 
 ## Ordem (não inverter)
-A. Site -> Azure, servindo telecomtc.com.br. Estabilizar 7 dias.
+A. Site -> Azure, servindo telecomtc.com.br.
 B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
    hostnames. Zona tctelecom.com.br migra para Azure DNS — e-mail dela
    (Exchange Online) é só espelhado verbatim, nada muda ali.
+
+Portão A→B é por EVIDÊNCIA, não por calendário (decisão 2026-08-16): os
+"7 dias" do runbook existiam para de-riscar o Projeto C, que está fora de
+escopo. Seguir assim que o cutover de telecomtc estiver verde (smoke +
+mail-regression + certificado + envio/recebimento real). Ver PLAN.md >
+Projeto B para o que essa mudança NÃO remove — o risco do Projeto B é o
+e-mail principal da empresa, não o site (tctelecom.com.br não tem site).
 
 ## Invioláveis
 - MX de telecomtc.com.br NUNCA muda — email fica na UOL indefinidamente,

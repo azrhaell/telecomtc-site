@@ -349,7 +349,8 @@ Azure, para a prova de posse sobreviver à troca de NS.
    nos dois hostnames + conferência visual no domínio real.
 4. Usuário desinstala o WordPress da UOL (A6.6) e reenvia o
    `sitemap.xml` no Search Console (A6.7).
-5. Portão A→B: **7 dias corridos** estáveis antes do Projeto B.
+5. Portão A→B: **por evidência, não por calendário** — ver a revisão do
+   portão na seção do Projeto B (decisão de 2026-08-16).
 
 **Nota honesta sobre "TTL 300s 72h antes" do runbook:** essa regra vale
 para a zona *antiga* (UOL), que não posso tocar. Aqui o risco real é bem
@@ -359,9 +360,48 @@ durante a janela, quem resolver pela UOL vê o WordPress (ainda no ar) e
 quem resolver pelo Azure vê o site novo — os dois funcionam.
 
 ## Projeto B — Redirect tctelecom.com.br
-Status: PENDENTE (depende do portão A→B)
+Status: PENDENTE (depende do portão A→B, revisado abaixo)
 
-Critério de saída: 4 hostnames validados + regressão de e-mail verde nos
+### Portão A→B revisado (decisão do usuário, 2026-08-16)
+O runbook original exigia **7 dias corridos** estáveis. Esse gate existia
+para acumular evidência antes do **Projeto C** (migrar e-mail + cancelar a
+UOL), que era a parte irreversível. Com o Projeto C fora de escopo
+(ADR-003), o gate perdeu a finalidade — então **cai a espera de 7 dias**.
+
+Substituído por **gate de evidência**: seguir para o Projeto B assim que o
+cutover de `telecomtc.com.br` estiver comprovadamente verde —
+`smoke.sh` 200 em todas as URLs nos dois hostnames, `mail-regression.sh`
+sem divergência, certificado TLS válido, e envio/recebimento real
+confirmado. Sem contagem de calendário.
+
+### Cuidado que a mudança de gate NÃO remove
+O risco do Projeto B **não é o site** — `tctelecom.com.br` não tem site
+nenhum (confirmado 2026-08-16: HTTP 000 no apex e no www, sem registro A
+no apex). O risco é que esse domínio carrega o **e-mail principal da
+empresa** (MX → `tctelecom-com-br.mail.protection.outlook.com`, DNS
+hospedado na Microsoft em `ns[1-4].bdm.microsoftonline.com`), e o
+Projeto B move essa hospedagem de DNS para o Azure. Espelho errado =
+e-mail principal quebrado. Isso é risco igual ou maior que o do Projeto A.
+
+Esperar dias não mitigava isso. O que mitiga:
+- espelho verbatim do snapshot (MX, SPF, autodiscover, DKIM selector1 e
+  selector2, `_dmarc`) — o `dns-snapshot-20260815.txt` já tem todos
+- conferir a zona nova consultando os nameservers do Azure **direto**,
+  antes de trocar o NS (mesmo método usado na A6.1)
+- TTL 300s desde o início, para rollback rápido
+- `mail-regression.sh` verde antes e depois + teste real de envio e
+  recebimento em `@tctelecom.com.br`
+
+### Simplificação que o "sem site" permite
+Diferente do Projeto A, aqui **não é preciso o dance do `_dnsauth` antes
+do cutover**. Como não existe site para derrubar, dá para trocar o NS
+primeiro e registrar os domínios customizados no SWA depois — sair de
+"não responde nada" para a página de not-found do Azure por alguns
+minutos não é regressão. Isso evita justamente o problema de cache
+negativo que travou a A6.
+
+Critério de saída: 4 hostnames validados (2 em 200, 2 em 301 com path
+preservado, via `smoke.sh --redirect`) + regressão de e-mail verde nos
 dois domínios.
 
 ## Projeto C — E-mail + cancelamento da UOL
