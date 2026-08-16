@@ -25,7 +25,44 @@ body {
   color: var(--foreground);
 }
 
-/* Título com efeito neon (glow rosa), usado em seções "FALE CONOSCO" / "Trabalhe Conosco" */
+/* ---------------------------------------------------------------------------
+   Animações — recriam os efeitos do Elementor do site original (telecomtc.com.br)
+   que a migração para Next.js havia perdido.
+   --------------------------------------------------------------------------- */
+
+@keyframes tc-up    { from { opacity: 0; transform: translateY(28px) } to { opacity: 1; transform: none } }
+@keyframes tc-left  { from { opacity: 0; transform: translateX(-34px) } to { opacity: 1; transform: none } }
+@keyframes tc-right { from { opacity: 0; transform: translateX(34px) }  to { opacity: 1; transform: none } }
+@keyframes tc-pop   { from { opacity: 0; transform: scale(.86) }        to { opacity: 1; transform: scale(1) } }
+@keyframes tc-in    { from { opacity: 0 }                               to { opacity: 1 } }
+@keyframes tc-zoom  { from { transform: scale(1) }                      to { transform: scale(1.08) } }
+@keyframes tc-bounce { 0%, 100% { transform: translate(-50%, 0) } 50% { transform: translate(-50%, 10px) } }
+@keyframes tc-ring  { 0% { transform: scale(1); opacity: .55 } 70%, 100% { transform: scale(1.7); opacity: 0 } }
+@keyframes tc-neon {
+  0%, 100% { text-shadow: 0 0 4px var(--brand-pink), 0 0 10px var(--brand-pink), 0 0 22px var(--brand-pink), 2px 2px 0 var(--brand-pink) }
+  50%      { text-shadow: 0 0 6px var(--brand-pink), 0 0 16px var(--brand-pink), 0 0 38px var(--brand-pink), 2px 2px 0 var(--brand-pink) }
+}
+
+/* Entrada ao rolar (equivalente às "Entrance Animations" do Elementor).
+   O componente Reveal só adiciona .tc-reveal quando o IntersectionObserver
+   está disponível — sem JS o conteúdo permanece visível. */
+.tc-reveal { opacity: 0 }
+.tc-reveal.is-in { animation: tc-up .75s cubic-bezier(.2, .7, .3, 1) both }
+.tc-reveal[data-kind='left'].is-in  { animation-name: tc-left }
+.tc-reveal[data-kind='right'].is-in { animation-name: tc-right }
+.tc-reveal[data-kind='pop'].is-in   { animation-name: tc-pop }
+.tc-reveal[data-kind='in'].is-in    { animation-name: tc-in }
+
+/* Ken Burns lento nos banners do hero */
+.tc-kenburns { animation: tc-zoom 14s ease-in-out infinite alternate }
+
+/* Chevron duplo do hero de /empresa/ */
+.tc-bounce { animation: tc-bounce 1.8s ease-in-out infinite }
+
+/* Anel pulsante do botão flutuante do WhatsApp */
+.tc-ring { animation: tc-ring 2.2s ease-out infinite }
+
+/* Título com efeito neon (glow rosa), usado em "FALE CONOSCO" / "Trabalhe Conosco" */
 .neon-text {
   color: #ffffff;
   text-shadow:
@@ -33,12 +70,21 @@ body {
     0 0 10px var(--brand-pink),
     0 0 22px var(--brand-pink),
     2px 2px 0 var(--brand-pink);
+  animation: tc-neon 3.2s ease-in-out infinite;
 }
 
-/* Aproximação estática do padrão de "rede/partículas" (Elementor particles.js) usado
-   nos fundos magenta — pontos + linhas finas repetidos via SVG de fundo. */
+/* Fallback estático do padrão de rede (fica atrás do <canvas> do ParticlesNetwork,
+   e é o que aparece se o JS não rodar). */
 .network-pattern {
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.35) 1px, transparent 1.5px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.35) 1px, transparent 1.5px);
   background-size: 28px 28px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tc-reveal { opacity: 1 }
+  .tc-reveal.is-in,
+  .tc-kenburns,
+  .tc-bounce,
+  .tc-ring,
+  .neon-text { animation: none !important }
 }

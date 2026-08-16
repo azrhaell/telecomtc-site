@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Reveal from '@/components/Reveal';
 import { CONTACT, TEAMS } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -24,14 +25,17 @@ export default function EmpresaPage() {
         {/* overlay roxo translúcido, igual ao original (#940EA9 a 30% de opacidade) */}
         <div className="absolute inset-0 bg-brand-purple/30" aria-hidden="true" />
         <div className="relative z-10 px-4">
-          <h1 className="font-heading text-6xl uppercase leading-none sm:text-7xl md:text-8xl">
+          <h1 className="font-heading animate-[tc-up_.9s_cubic-bezier(.2,.7,.3,1)_both] text-6xl uppercase leading-none sm:text-7xl md:text-8xl">
             TC TELECOM
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base font-semibold sm:text-lg">
+          <p
+            style={{ animationDelay: '.2s' }}
+            className="mx-auto mt-5 max-w-xl animate-[tc-up_.9s_cubic-bezier(.2,.7,.3,1)_both] text-base font-semibold sm:text-lg"
+          >
             Saiba mais sobre nossa Empresa, equipes e escritórios de atendimento.
           </p>
         </div>
-        <div className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2" aria-hidden="true">
+        <div className="tc-bounce absolute bottom-7 left-1/2 z-10 -translate-x-1/2" aria-hidden="true">
           <svg
             viewBox="0 0 24 16"
             className="h-6 w-8 text-white/80"
@@ -50,38 +54,46 @@ export default function EmpresaPage() {
       {/* Somos a TC TELECOM */}
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h2 className="font-heading text-3xl text-brand-purple sm:text-4xl md:text-5xl">
+          <Reveal as="h2" className="font-heading text-3xl text-brand-purple sm:text-4xl md:text-5xl">
             Somos a TC TELECOM
-          </h2>
-          <p className="mt-6 text-lg leading-relaxed text-zinc-700">
-            Estamos no mercado há mais de <strong>10 anos</strong>. Somos{' '}
-            <strong>o maior parceiro autorizado VIVO EMPRESAS do RJ</strong> e conquistamos essa posição com
-            muito trabalho e transparência. Temos como objetivo muito mais do que apenas vender, mas criar
-            laços de <strong>confiança</strong> com nossos clientes.
-          </p>
-          <a
-            href={CONTACT.whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-block rounded-full bg-brand-purple px-8 py-3 font-heading text-white transition-colors hover:bg-brand-purple-dark"
-          >
-            Fale com um consultor
-          </a>
+          </Reveal>
+          <Reveal delay={120}>
+            <p className="mt-6 text-lg leading-relaxed text-zinc-700">
+              Estamos no mercado há mais de <strong>10 anos</strong>. Somos{' '}
+              <strong>o maior parceiro autorizado VIVO EMPRESAS do RJ</strong> e conquistamos essa posição com
+              muito trabalho e transparência. Temos como objetivo muito mais do que apenas vender, mas criar
+              laços de <strong>confiança</strong> com nossos clientes.
+            </p>
+          </Reveal>
+          <Reveal delay={220}>
+            <a
+              href={CONTACT.whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-block rounded-full bg-brand-purple px-8 py-3 font-heading text-white transition-colors hover:bg-brand-purple-dark"
+            >
+              Fale com um consultor
+            </a>
+          </Reveal>
         </div>
       </section>
 
       {/* NOSSAS EQUIPES */}
       <section className="bg-zinc-50 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <h2 className="text-center font-heading text-3xl text-brand-purple sm:text-4xl md:text-5xl">
+          <Reveal as="h2" className="text-center font-heading text-3xl text-brand-purple sm:text-4xl md:text-5xl">
             NOSSAS EQUIPES
-          </h2>
+          </Reveal>
           <div className="mt-12 grid grid-cols-2 gap-6 md:grid-cols-4">
-            {TEAMS.map((team) => (
-              <div key={team.title} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-100">
+            {TEAMS.map((team, i) => (
+              <Reveal
+                key={team.title}
+                delay={i * 110}
+                className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-100 transition-all hover:-translate-y-[7px] hover:shadow-[0_16px_34px_rgba(101,0,159,.16)]"
+              >
                 <h3 className="font-heading text-lg text-brand-purple">{team.title}</h3>
                 <p className="mt-2 text-sm text-zinc-700">{team.description}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -97,7 +109,7 @@ export default function EmpresaPage() {
         }}
       >
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 sm:px-6 md:flex-row md:items-start md:justify-between">
-          <div className="text-center md:text-left">
+          <Reveal kind="left" className="text-center md:text-left">
             <h2 className="neon-text font-heading text-5xl uppercase sm:text-6xl">FALE CONOSCO</h2>
             <a
               href={CONTACT.whatsappLink}
@@ -107,14 +119,16 @@ export default function EmpresaPage() {
             >
               Fale com um consultor
             </a>
-          </div>
-          <Image
-            src="/wp-content/uploads/2022/05/man_young_vivo-removebg-preview.png"
-            alt=""
-            width={320}
-            height={420}
-            className="hidden h-96 w-auto object-contain md:block"
-          />
+          </Reveal>
+          <Reveal kind="right">
+            <Image
+              src="/wp-content/uploads/2022/05/man_young_vivo-removebg-preview.png"
+              alt=""
+              width={320}
+              height={420}
+              className="hidden h-96 w-auto object-contain md:block"
+            />
+          </Reveal>
         </div>
       </section>
     </>

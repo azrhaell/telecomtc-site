@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Reveal from '@/components/Reveal';
 import { CONTACT, SERVICES } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -113,14 +114,15 @@ export default function ServicosPage() {
         }}
       >
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <h1 className="font-heading text-4xl uppercase leading-[1.05] text-white sm:text-5xl md:text-6xl">
+          <h1 className="font-heading animate-[tc-up_.8s_cubic-bezier(.2,.7,.3,1)_both] text-4xl uppercase leading-[1.05] text-white sm:text-5xl md:text-6xl">
             Soluções
             <br />
             <b>TC Telecom</b>
           </h1>
           <a
             href="#vivo-movel"
-            className="mt-7 inline-block rounded-full border-2 border-white px-7 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-brand-purple"
+            style={{ animationDelay: '.18s' }}
+            className="mt-7 inline-block animate-[tc-up_.8s_cubic-bezier(.2,.7,.3,1)_both] rounded-full border-2 border-white px-7 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-brand-purple"
           >
             Saiba mais
           </a>
@@ -132,7 +134,8 @@ export default function ServicosPage() {
         {SERVICES.map((service, index) => {
           const imageOnLeft = index % 2 === 1;
           return (
-            <section
+            <Reveal
+              as="section"
               key={service.id}
               id={service.id}
               className={`mx-auto flex max-w-6xl scroll-mt-24 flex-col items-center gap-10 px-4 py-14 sm:px-6 md:py-20 ${
@@ -177,10 +180,10 @@ export default function ServicosPage() {
                   alt={service.imageAlt}
                   width={200}
                   height={200}
-                  className="rounded-full object-cover ring-4 ring-brand-pink"
+                  className="rounded-full object-cover ring-4 ring-brand-pink transition-transform duration-500 hover:scale-[1.04]"
                 />
               </div>
-            </section>
+            </Reveal>
           );
         })}
       </div>
@@ -194,14 +197,16 @@ export default function ServicosPage() {
           backgroundPosition: 'center',
         }}
       >
-        <a
-          href={CONTACT.whatsappLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative z-10 inline-block rounded-full border-2 border-white px-9 py-3.5 text-base font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-brand-purple-dark"
-        >
-          Fale com um consultor
-        </a>
+        <Reveal kind="pop" className="relative z-10">
+          <a
+            href={CONTACT.whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-full border-2 border-white px-9 py-3.5 text-base font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-brand-purple-dark"
+          >
+            Fale com um consultor
+          </a>
+        </Reveal>
       </section>
     </>
   );

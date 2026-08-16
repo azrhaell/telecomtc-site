@@ -212,6 +212,43 @@ aparência real do site. Corrigido:
 - Deploy: push para main, workflow do GitHub Actions publica
   automaticamente.
 
+## Animações (2026-08-15, pós-correção de fidelidade)
+Status: CONCLUÍDA
+
+Usuário revisou o site num outro ambiente de design (fora deste
+projeto) e trouxe um pacote de handoff (`design_handoff_animacoes/`,
+lido e aplicado, não commitado no repo) recriando as animações do
+Elementor original que a migração não tinha capturado:
+
+- `Reveal.tsx` (novo) — entrada ao rolar (fade/slide) via
+  IntersectionObserver, usado em títulos/colunas/cards nas 4 páginas.
+  Só ativa se IntersectionObserver existir; sem JS o conteúdo
+  permanece visível.
+- `ParticlesNetwork.tsx` (novo) — canvas com pontos e linhas em
+  movimento, substitui o `.network-pattern` estático (que virou
+  fallback) na seção "SOLUÇÕES TC TELECOM" da home. Respeita
+  `prefers-reduced-motion`.
+- `HeroSlideshow.tsx` — crossfade de 1s (era 700ms) + Ken Burns
+  (zoom lento) + dots clicáveis com `aria-current`.
+- `.neon-text` ganhou pulso (`tc-neon`); chevron do hero de /empresa/
+  ganhou `tc-bounce`; hovers de botões/cards/ícones sociais com
+  elevação e sombra; item de nav ativo com borda inferior rosa
+  (`usePathname()` no `Header.tsx`).
+- `not-found.tsx` recebeu o mesmo stagger de entrada e teve os
+  `#4a0072` hardcoded trocados por `brand-purple` (ficou pra trás na
+  correção de fidelidade anterior).
+- **Não copiado**: `WhatsAppFloat.tsx` do pacote — o RD Station já
+  injeta um botão flutuante; usar os dois duplicaria.
+- Paleta, Web3Forms, `staticwebapp.config.json`, `next.config.ts`,
+  scripts de rastreamento e `public/wp-content/uploads/` — intocados,
+  conforme restrição do próprio handoff.
+
+Verificação: lint limpo, build limpo (12 MB / 87 arquivos), as 25 URLs
+do contrato respondem 200, screenshots com scroll simulado (pra
+disparar os IntersectionObserver) conferidos nas 4 páginas — nenhum
+conteúdo preso invisível, nav ativo correto por rota, partículas
+renderizando. Sem erro de console novo.
+
 ## Fase A6 — Zona DNS, cutover e validação
 Status: PENDENTE — não iniciada.
 

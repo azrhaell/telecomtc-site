@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { NAV_ITEMS, CONTACT, SOCIAL_LINKS } from '@/lib/site';
 
@@ -13,7 +14,7 @@ function SocialIcons({ className = '' }: { className?: string }) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Facebook"
-        className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-purple text-white"
+        className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-purple text-white transition-all hover:-translate-y-0.5 hover:scale-105 hover:bg-brand-pink"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
           <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z" />
@@ -24,7 +25,7 @@ function SocialIcons({ className = '' }: { className?: string }) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Instagram"
-        className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-purple text-white"
+        className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-purple text-white transition-all hover:-translate-y-0.5 hover:scale-105 hover:bg-brand-pink"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
           <rect x="3" y="3" width="18" height="18" rx="5" />
@@ -37,7 +38,7 @@ function SocialIcons({ className = '' }: { className?: string }) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="LinkedIn"
-        className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-purple text-white"
+        className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-purple text-white transition-all hover:-translate-y-0.5 hover:scale-105 hover:bg-brand-pink"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
           <path d="M4.98 3.5C4.98 4.88 3.9 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5ZM.24 8.25h4.5V23H.24V8.25ZM8.28 8.25h4.31v2.01h.06c.6-1.14 2.07-2.34 4.26-2.34 4.56 0 5.4 3 5.4 6.9V23h-4.5v-6.4c0-1.53-.03-3.5-2.13-3.5-2.14 0-2.47 1.67-2.47 3.39V23h-4.5V8.25Z" />
@@ -49,6 +50,7 @@ function SocialIcons({ className = '' }: { className?: string }) {
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40">
@@ -66,17 +68,24 @@ export default function Header() {
               width={140}
               height={56}
               priority
-              className="h-10 w-auto"
+              className="h-10 w-auto transition-transform hover:scale-[1.04]"
             />
           </Link>
 
           <nav className="hidden items-center gap-6 text-sm font-semibold tracking-wide md:flex">
             {NAV_ITEMS.map((item) => (
-              <Link key={item.href} href={item.href} prefetch={false} className="uppercase transition-colors hover:text-purple-200">
+              <Link
+                key={item.href}
+                href={item.href}
+                prefetch={false}
+                className={`border-b-2 pb-1 uppercase transition-colors hover:text-purple-200 ${
+                  pathname === item.href ? 'border-brand-pink' : 'border-transparent'
+                }`}
+              >
                 {item.label}
               </Link>
             ))}
-            <Link href="/#contato" className="uppercase transition-colors hover:text-purple-200">
+            <Link href="/#contato" className="border-b-2 border-transparent pb-1 uppercase transition-colors hover:text-purple-200">
               Contato
             </Link>
           </nav>

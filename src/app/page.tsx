@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ContactForm from '@/components/ContactForm';
 import HeroSlideshow from '@/components/HeroSlideshow';
+import ParticlesNetwork from '@/components/ParticlesNetwork';
+import Reveal from '@/components/Reveal';
 import { CONTACT, SERVICES } from '@/lib/site';
 
 function ServiceIcon({ id }: { id: string }) {
@@ -47,25 +49,31 @@ export default function HomePage() {
       {/* HERO — carrossel de banners */}
       <HeroSlideshow />
       <div className="bg-white py-8 text-center">
-        <a
-          href={CONTACT.whatsappProposalLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block rounded-full bg-brand-purple-dark px-8 py-3 font-bold text-white transition-opacity hover:opacity-90"
-        >
-          Receba uma proposta
-        </a>
+        <Reveal kind="pop">
+          <a
+            href={CONTACT.whatsappProposalLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-full bg-brand-purple-dark px-8 py-3 font-bold text-white transition-all hover:-translate-y-[3px] hover:bg-brand-purple hover:shadow-[0_12px_26px_rgba(78,25,108,.4)]"
+          >
+            Receba uma proposta
+          </a>
+        </Reveal>
       </div>
 
       {/* SOLUÇÕES TC TELECOM */}
-      <section className="network-pattern bg-brand-purple py-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="font-heading text-center text-3xl text-white sm:text-4xl">SOLUÇÕES TC TELECOM</h2>
+      <section className="network-pattern relative overflow-hidden bg-brand-purple py-16">
+        <ParticlesNetwork />
+        <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
+          <Reveal as="h2" className="font-heading text-center text-3xl text-white sm:text-4xl">
+            SOLUÇÕES TC TELECOM
+          </Reveal>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {SERVICES.map((service) => (
-              <div
+            {SERVICES.map((service, index) => (
+              <Reveal
                 key={service.id}
-                className="flex flex-col items-center rounded-lg border border-white px-6 py-8 text-center"
+                delay={index * 120}
+                className="flex flex-col items-center rounded-lg border border-white px-6 py-8 text-center transition-all hover:-translate-y-1.5 hover:bg-white/10"
               >
                 <div className="text-white">
                   <ServiceIcon id={service.id} />
@@ -78,7 +86,7 @@ export default function HomePage() {
                 >
                   Saiba mais
                 </Link>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -88,7 +96,7 @@ export default function HomePage() {
       <section className="bg-white py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid items-center gap-10 md:grid-cols-2">
-            <div>
+            <Reveal kind="left">
               <h2 className="font-heading text-2xl uppercase text-brand-purple sm:text-3xl">
                 Somos a TC TELECOM
               </h2>
@@ -98,8 +106,8 @@ export default function HomePage() {
                 muito trabalho e transparência. Temos como objetivo muito mais do que apenas vender, mas criar
                 laços de <strong>confiança</strong> com nossos clientes.
               </p>
-            </div>
-            <div>
+            </Reveal>
+            <Reveal kind="right">
               <Image
                 src="/wp-content/uploads/2022/04/FOTO-TC-TELECOM.jpg"
                 alt="Equipe TC Telecom"
@@ -107,7 +115,7 @@ export default function HomePage() {
                 height={553}
                 className="w-full rounded-lg object-cover shadow-lg"
               />
-            </div>
+            </Reveal>
           </div>
           <div className="mt-10 text-center">
             <a
@@ -125,9 +133,11 @@ export default function HomePage() {
       {/* FALE CONOSCO */}
       <section id="contato" className="scroll-mt-20 bg-black py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="neon-text font-heading text-center text-5xl sm:text-6xl">FALE CONOSCO</h2>
+          <Reveal as="h2" kind="in" className="neon-text font-heading text-center text-5xl sm:text-6xl">
+            FALE CONOSCO
+          </Reveal>
           <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
-            <div>
+            <Reveal kind="left">
               <Image
                 src="/wp-content/uploads/2022/03/background.png"
                 alt="Atendimento TC Telecom — Fibra"
@@ -135,10 +145,10 @@ export default function HomePage() {
                 height={692}
                 className="w-full object-contain"
               />
-            </div>
-            <div>
+            </Reveal>
+            <Reveal kind="right">
               <ContactForm />
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
