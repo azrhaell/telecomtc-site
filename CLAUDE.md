@@ -59,6 +59,17 @@ B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
 | Repositório | `azrhaell/telecomtc-site` |
 | Domínio canônico | `https://telecomtc.com.br` (apex, sem www) |
 | Hostname do SWA (site), pré-DNS | `gentle-field-06f152f0f.7.azurestaticapps.net` |
+| Zona Azure DNS (site) | `telecomtc.com.br` em `rg-tctelecom`, TTL 300s |
+| Nameservers da zona nova | `ns1-04.azure-dns.com` · `ns2-04.azure-dns.net` · `ns3-04.azure-dns.org` · `ns4-04.azure-dns.info` |
+
+## Cutover de DNS — ordem que NÃO pode inverter (aprendido em A6)
+O Azure Static Web Apps devolve "site não encontrado" para qualquer
+hostname que não esteja registrado como domínio customizado no app.
+Portanto: **registrar e validar o domínio customizado ANTES de trocar os
+NS**, senão o site cai até validar e emitir certificado. Como a
+validação faz consulta DNS real, e quem responde antes do cutover é o
+provedor antigo, a prova de posse (`_dnsauth.<host>` TXT) precisa ser
+criada lá no provedor antigo. Vale o mesmo para o Projeto B.
 
 ## Ambiente (validado em 2026-08-15)
 - Windows, PowerShell + Git Bash. wget e dig NÃO instalados — substituídos

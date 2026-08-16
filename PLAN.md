@@ -275,18 +275,88 @@ batendo exato com o original; fonte do menu 16px; botão com
 `text-transform: uppercase`. Build/lint limpos, 25 URLs 200, publicado.
 
 ## Fase A6 — Zona DNS, cutover e validação
-Status: PENDENTE — não iniciada.
+Status: EM ANDAMENTO (2026-08-16) — travada aguardando 2 TXT na UOL
 
-Vai envolver: popular a zona `telecomtc.com.br` no Azure DNS como
-espelho verbatim do snapshot (`dns-snapshot-20260815.txt`, incluindo as
-anomalias de SPF/DMARC já documentadas — não corrigir), adicionar só o
-alias A no apex + CNAME `www` → SWA, escrever
-`scripts/mail-regression.sh` **antes** de qualquer mudança de DNS, e só
-depois disso pedir para o usuário trocar os NS no registro.br (TTL 300s
-72h antes). É o primeiro passo com potencial de afetar e-mail em
-produção (mesmo que só por erro de espelhamento) — confirmar com o
-usuário antes de começar, não assumir sinal verde automático só porque
-a A5 terminou bem.
+### A6.1 — Zona espelho no Azure DNS: CONCLUÍDA
+Zona `telecomtc.com.br` criada em `rg-tctelecom`, com os registros de
+e-mail espelhados **byte a byte** do `dns-snapshot-20260815.txt`,
+incluindo as anomalias preservadas de propósito (dois TXT de SPF, um
+deles malformado; dois TXT `_dmarc`):
+
+| Registro | Valor |
+|---|---|
+| MX `@` | `10 mx.uhserver.com` |
+| TXT `@` | `v=spf1include:_spf.rdstation.com.brinclude:sendgrid.net~all` + `v=spf1 include:spf.whservidor.com ?all` |
+| TXT `_dmarc` | `v=DMARC1` + `v=DMARC1; p=none;` |
+| A `mail`/`pop` | `200.147.69.9` |
+| A `webmail` | `200.147.66.3` |
+| A `smtp` | `200.147.36.31` |
+| A `imap`/`pop3` | `200.147.41.245` |
+| A `@` | **alias** → recurso `swa-telecomtc-site` |
+| CNAME `www` | `gentle-field-06f152f0f.7.azurestaticapps.net` |
+
+Conferido consultando os nameservers do Azure direto (`ns1-04.azure-dns.com`):
+a zona nova devolve exatamente os mesmos valores de e-mail da produção.
+TTL de todos os record sets baixado de 3600 → **300s**, para rollback
+rápido pós-cutover (verificado depois que o `--set ttl` não apagou o
+`targetResource` do alias nem nenhum valor de e-mail).
+
+**Nameservers da zona nova** (para a troca no registro.br):
+`ns1-04.azure-dns.com` · `ns2-04.azure-dns.net` ·
+`ns3-04.azure-dns.org` · `ns4-04.azure-dns.info`
+
+### A6.2 — Testes escritos ANTES do risco: CONCLUÍDA
+- `scripts/mail-regression.mjs` + `.sh` — compara MX/SPF/autodiscover/
+  DKIM/`_dmarc` ao vivo contra o snapshot nos dois domínios. Passando
+  limpo. (Um falso positivo inicial foi corrigido: o snapshot grava
+  "sem registro" como string de erro, o comparador tratava como valor.)
+- `scripts/smoke.mjs` + `.sh` — cada URL de `url-contract.txt` em 200 no
+  mesmo path; modo `--redirect` (para o Projeto B) exige 301 com path
+  preservado. **Testado negativamente** (rodado em modo redirect contra
+  o SWA, que devolve 200): acusou as 35 divergências e saiu com código
+  1 — ou seja, o guardião realmente guarda, não é carimbo.
+
+### A6.3 — Domínios customizados no SWA: AGUARDANDO AÇÃO DO USUÁRIO
+Descoberta que definiu a ordem do cutover: o SWA devolve "site não
+encontrado" para hostname que não reconhece. Trocar os NS antes de
+registrar os domínios = **site fora do ar** até validar e emitir
+certificado. Usuário optou por **zero downtime**: registrar e validar
+com a UOL ainda servindo o site.
+
+Os dois hostnames foram registrados com validação por TXT
+(`--validation-method dns-txt-token`, aditiva). O risco anotado no
+plano — de o Azure não aceitar TXT para subdomínio — **não se
+concretizou**: `www` foi aceito igual ao apex. Estado atual: ambos em
+`Validating`.
+
+**Pendente (usuário), no painel da UOL — 2 registros TXT aditivos:**
+
+| Nome | Valor |
+|---|---|
+| `_dnsauth.telecomtc.com.br` | `_j7bvvp5zc2fbving8qnv2t1ov0ygvxc` |
+| `_dnsauth.www.telecomtc.com.br` | `_jhpk20vrekm6e6ztwdgkoq5k5w10z35` |
+
+Ficam em subdomínio próprio — **não** encostam no TXT raiz (onde vive o
+SPF) nem no `_dmarc`, então a regra de não tocar em e-mail segue
+respeitada. Os mesmos dois TXT já foram adicionados também à zona do
+Azure, para a prova de posse sobreviver à troca de NS.
+
+### A6.4+ — Pendente, nesta ordem
+1. Usuário adiciona os 2 TXT na UOL → eu acompanho até os hostnames
+   ficarem `Ready` (validação + certificado).
+2. **Só então** usuário troca os NS no registro.br.
+3. Eu rodo `mail-regression.sh` (tem que continuar verde) + `smoke.sh`
+   nos dois hostnames + conferência visual no domínio real.
+4. Usuário desinstala o WordPress da UOL (A6.6) e reenvia o
+   `sitemap.xml` no Search Console (A6.7).
+5. Portão A→B: **7 dias corridos** estáveis antes do Projeto B.
+
+**Nota honesta sobre "TTL 300s 72h antes" do runbook:** essa regra vale
+para a zona *antiga* (UOL), que não posso tocar. Aqui o risco real é bem
+menor do que o runbook sugere: os registros de e-mail são idênticos nas
+duas zonas, então distorção de propagação não pode quebrar e-mail; e
+durante a janela, quem resolver pela UOL vê o WordPress (ainda no ar) e
+quem resolver pelo Azure vê o site novo — os dois funcionam.
 
 ## Projeto B — Redirect tctelecom.com.br
 Status: PENDENTE (depende do portão A→B)
