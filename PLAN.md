@@ -329,17 +329,36 @@ plano — de o Azure não aceitar TXT para subdomínio — **não se
 concretizou**: `www` foi aceito igual ao apex. Estado atual: ambos em
 `Validating`.
 
-**Pendente (usuário), no painel da UOL — 2 registros TXT aditivos:**
+**CORREÇÃO (2026-08-16) — a primeira instrução estava errada.**
+Pedi os TXT em `_dnsauth.<host>`, que é a convenção do Azure Front Door /
+App Service, **não** do Static Web Apps. O usuário criou os dois
+registros corretamente conforme instruí, mas no lugar errado — por isso
+a validação ficou ~10h presa em `Validating`. Descoberto conferindo a
+doc oficial em vez de continuar esperando o cache expirar.
 
-| Nome | Valor |
-|---|---|
-| `_dnsauth.telecomtc.com.br` | `_j7bvvp5zc2fbving8qnv2t1ov0ygvxc` |
-| `_dnsauth.www.telecomtc.com.br` | `_jhpk20vrekm6e6ztwdgkoq5k5w10z35` |
+O que o SWA realmente exige (ver tabela em CLAUDE.md):
+- **apex** → TXT com host **`@`** (raiz), valor = token
+- **`www`** → **CNAME**, não TXT. Não há validação por TXT para
+  subdomínio.
 
-Ficam em subdomínio próprio — **não** encostam no TXT raiz (onde vive o
-SPF) nem no `_dmarc`, então a regra de não tocar em e-mail segue
-respeitada. Os mesmos dois TXT já foram adicionados também à zona do
-Azure, para a prova de posse sobreviver à troca de NS.
+Plano corrigido:
+1. Usuário **acrescenta** na UOL um TXT em `@` com valor
+   `_j7bvvp5zc2fbving8qnv2t1ov0ygvxc`. Acrescentar, nunca substituir —
+   é a mesma raiz onde vivem os dois SPF. Múltiplos TXT na raiz são
+   válidos (o domínio já tem dois hoje) e o SPF é lido pelo prefixo
+   `v=spf1`, então o token não interfere.
+2. Os dois `_dnsauth` criados antes ficam inertes; não precisa apagar
+   (menos edição perto do SPF = menos risco). Somem sozinhos quando a
+   zona migrar para o Azure.
+3. Validação do apex depende só do TTL do RRset TXT que já existe
+   (14400 na UOL) → até ~4h, normalmente menos. Sem o problema de cache
+   negativo de 24h.
+4. `www` **não** é pré-validado. O registro dele no SWA (feito com TXT)
+   é inútil e será removido e refeito com `cname-delegation` **depois**
+   da troca de NS, quando o Azure DNS já for autoritativo e o CNAME
+   `www` → SWA já estiver no ar com TTL 300s. Valida em minutos.
+   Custo: `www` fica alguns minutos fora do ar logo após o cutover — o
+   apex, que é o canônico, não fica.
 
 ### A6.4+ — Pendente, nesta ordem
 1. Usuário adiciona os 2 TXT na UOL → eu acompanho até os hostnames

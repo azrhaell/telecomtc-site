@@ -73,10 +73,35 @@ e-mail principal da empresa, não o site (tctelecom.com.br não tem site).
 O Azure Static Web Apps devolve "site não encontrado" para qualquer
 hostname que não esteja registrado como domínio customizado no app.
 Portanto: **registrar e validar o domínio customizado ANTES de trocar os
-NS**, senão o site cai até validar e emitir certificado. Como a
-validação faz consulta DNS real, e quem responde antes do cutover é o
-provedor antigo, a prova de posse (`_dnsauth.<host>` TXT) precisa ser
-criada lá no provedor antigo. Vale o mesmo para o Projeto B.
+NS**, senão o site cai até validar e emitir certificado. Vale o mesmo
+para o Projeto B.
+
+### Onde vai o registro de validação — SWA ≠ App Service/Front Door
+**Erro cometido em 2026-08-16, custou ~10h:** usei `_dnsauth.<host>`,
+que é a convenção do **Azure Front Door / App Service** — não do Static
+Web Apps. O SWA valida assim
+([docs](https://learn.microsoft.com/en-us/azure/static-web-apps/apex-domain-external)):
+
+| Hostname | Método | Registro exigido |
+|---|---|---|
+| **apex** (`telecomtc.com.br`) | TXT (`dns-txt-token`) | TXT com host **`@`** (na raiz), valor = token |
+| **subdomínio** (`www....`) | **CNAME** (`cname-delegation`) | CNAME `www` → hostname do SWA. **Não existe validação por TXT para subdomínio.** |
+
+Consequências práticas:
+- O TXT do apex convive com o SPF na raiz. Múltiplos TXT na mesma raiz
+  são válidos e o SPF é identificado pelo prefixo `v=spf1` — então
+  **ACRESCENTAR** o token não quebra SPF. Mas **substituir** quebra.
+- `www` não dá para pré-validar sem já apontar o CNAME para o SWA, o que
+  o derruba antes do certificado existir. Então: pré-validar só o apex,
+  trocar os NS, e registrar o `www` logo depois (com Azure DNS já
+  autoritativo e TTL 300s, valida em minutos).
+
+### Cache negativo do provedor antigo
+A UOL usa `minttl = 86400` no SOA: um nome que não existia fica marcado
+como inexistente por até **24h** nos resolvers. Por isso registro de
+validação em nome novo (como `_dnsauth`) é ruim — se o Azure consultar
+antes de você criar, espera-se 24h à toa. Já um TXT na raiz (`@`) só
+depende do TTL do RRset que já existe (14400 na UOL = até 4h).
 
 ## Ambiente (validado em 2026-08-15)
 - Windows, PowerShell + Git Bash. wget e dig NÃO instalados — substituídos
