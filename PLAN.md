@@ -439,3 +439,44 @@ dois domínios.
 Status: FORA DE ESCOPO — não será executado (ver ADR-003, decisão de
 2026-08-15). UOL permanece ativa indefinidamente como provedora de
 e-mail de @telecomtc.com.br.
+
+## A6.1-bis — Espelho REFEITO a partir do arquivo de zona (2026-08-16)
+Status: CONCLUÍDA
+
+**Falha grave encontrada a pedido do usuário ("seja criterioso"), antes da
+troca de NS.** O espelho anterior tinha **7 de 38** registros e passou por
+"verbatim". Causa raiz: `dns-snapshot.mjs` consulta uma **lista fixa de nomes
+que eu imaginei** — e DNS não permite listar uma zona, então ele jamais
+descobriria um registro cujo nome eu não adivinhasse. Pior: o
+`mail-regression.sh` conferia exatamente os mesmos campos, então **os dois
+testes concordavam entre si e eram cegos para o mesmo ponto**.
+
+Fonte de verdade real: `dnszones/telecomtc.com.br.db` dentro do backup do
+cPanel — o arquivo de zona, que lista tudo.
+
+**O que teria quebrado na virada (31 registros ausentes):**
+- `pro._domainkey` (DKIM do e-mail UOL) e `s1`/`s2._domainkey` (DKIM SendGrid)
+  → e-mail sairia **sem assinatura**, degradando entregabilidade sem erro visível
+- 5 registros SRV (`_autodiscover`, `_imap`, `_pop3`, `_smtp`, `_submission`)
+  → autoconfiguração de clientes de e-mail
+- `mail`/`smtp`/`pop`/`pop3`/`imap`/`webmail` estavam como **A com IP fixo**;
+  na UOL são **CNAME**. Funcionaria hoje e quebraria quando a UOL trocasse de IP
+- `correio` ausente por completo
+- `cpanel`/`whm`/`webdisk`/`ftp`/`cpcontacts`/`cpcalendars` → acesso administrativo
+- `ofertas`/`lp` (landing pages RD Station, **em uso**) e 6 CNAMEs SendGrid
+  (`emailmkt`/`comercial`/`click*`/IDs numéricos) → marketing fora do ar
+
+**Correção:** `scripts/mirror-zone.mjs` — reconciliador que deriva o espelho do
+arquivo de zona, faz diff contra o estado real do Azure e **gera** os comandos
+(não executa), para o plano ser revisado antes de aplicar. Idempotente: rodar de
+novo só mostra o que ainda falta. Zona hoje: **40 record sets, diff zero**.
+
+**Dois bugs do próprio verificador, achados e corrigidos no processo:**
+- lia `SrvRecords`; o Azure devolve `SRVRecords` → reportava os 5 SRV como
+  ausentes quando existiam
+- checagem de `webmail` com fallback A→CNAME mal feito → falso negativo
+
+Lição para o Projeto B: **não confiar em snapshot por consulta.** Para
+`tctelecom.com.br` o DNS está na Microsoft, então é preciso exportar a zona pelo
+portal/Graph antes de espelhar — senão o mesmo erro se repete, e lá o e-mail é
+o principal da empresa.

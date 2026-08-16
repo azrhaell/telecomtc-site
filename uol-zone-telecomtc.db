@@ -1,0 +1,51 @@
+; cPanel first:136.0.29 (update_time):1786765536 Cpanel::ZoneFile::VERSION:1.3 hostname:a16-asgard12.hospedagemuolhost.com.br latest:136.0.33
+; Zone file for telecomtc.com.br
+$TTL 14400
+telecomtc.com.br.	86400	IN	SOA	ns1.cpuh12.hospedagemuolhost.com.br.	root.a16-asgard12.hospedagemuolhost.com.br.	(
+						2026081501 ;Serial Number
+						3600 ;refresh
+						1800 ;retry
+						1209600 ;expire
+						86400	)
+telecomtc.com.br.	86400	IN	NS	ns1.cpuh12.hospedagemuolhost.com.br.
+telecomtc.com.br.	86400	IN	NS	ns2.cpuh12.hospedagemuolhost.com.br.
+telecomtc.com.br.	14400	IN	A	186.234.81.29
+telecomtc.com.br.	14400	IN	MX	10	mx.uhserver.com.
+mail	14400	IN	CNAME	service.uhserver.com.
+www	14400	IN	CNAME	telecomtc.com.br.
+ftp	14400	IN	A	186.234.81.29
+; Entradas para utilizar Email Profissional
+telecomtc.com.br.	14400	IN	TXT	"v=spf1 include:spf.whservidor.com ?all"
+pro._domainkey	14400	IN	CNAME	pro._domainkey.uhserver.com.
+smtp	14400	IN	CNAME	smtp.uhserver.com.
+pop3	14400	IN	CNAME	pop.uhserver.com.
+imap	14400	IN	CNAME	imap.uhserver.com.
+pop	14400	IN	CNAME	pop.uhserver.com.
+correio	14400	IN	CNAME	services.uhserver.com.
+webmail	14400	IN	CNAME	mail.uhserver.com.
+_smtp._tcp	14400	IN	SRV	0	0	587	smtp.uhserver.com.
+_autodiscover._tcp	14400	IN	SRV	0	0	443	autodiscover.uol.com.br.
+_imap._tcp	14400	IN	SRV	0	0	143	imap.telecomtc.com.br.
+_pop3._tcp	14400	IN	SRV	10	0	110	pop3.telecomtc.com.br.
+_submission._tcp	14400	IN	SRV	10	0	587	smtp.uhserver.com.
+cpcontacts	14400	IN	A	186.234.81.29
+cpcalendars	14400	IN	A	186.234.81.29
+whm	14400	IN	A	186.234.81.29
+cpanel	14400	IN	A	186.234.81.29
+webdisk	14400	IN	A	186.234.81.29
+_dmarc	14400	IN	TXT	"v=DMARC1\; p=none\;"
+; Entradas abaixo copiadas do DNS dominios.uol.com.br
+emailmkt	14400	IN	CNAME	u42511867.wl118.sendgrid.net.
+clickemailmkt	14400	IN	CNAME	sendgrid.net.
+25593483	14400	IN	CNAME	sendgrid.net.
+ofertas	14400	IN	CNAME	pages.rdstation.com.br.
+lp	14400	IN	CNAME	88a3d10c2e3b.pages.rdstation.com.br.
+comercial	14400	IN	CNAME	u42511867.wl118.sendgrid.net.
+clickcomercial	14400	IN	CNAME	sendgrid.net.
+42511867	14400	IN	CNAME	sendgrid.net.
+_dmarc	14400	IN	TXT	"v=DMARC1"
+s1._domainkey	14400	IN	CNAME	s1.domainkey.u42511867.wl118.sendgrid.net.
+s2._domainkey	14400	IN	CNAME	s2.domainkey.u42511867.wl118.sendgrid.net.
+telecomtc.com.br.	14400	IN	TXT	"v=spf1include:_spf.rdstation.com.brinclude:sendgrid.net~all"
+_cpanel-dcv-test-record	14400	IN	TXT	"_cpanel-dcv-test-record=BQFtUj1H5fJhcx9OXNqIltvfoiczuKOR7Phy4OfsLacNphQhCcvV7pHXZOxFIO_v"
+_acme-challenge	14400	IN	TXT	"DuZkP11UN-9fQ7ZT4HxGr9vEWztiZLrDE2X_inz9qIQ"
