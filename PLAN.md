@@ -480,3 +480,54 @@ Lição para o Projeto B: **não confiar em snapshot por consulta.** Para
 `tctelecom.com.br` o DNS está na Microsoft, então é preciso exportar a zona pelo
 portal/Graph antes de espelhar — senão o mesmo erro se repete, e lá o e-mail é
 o principal da empresa.
+
+## VIRADA CONCLUÍDA — site no ar em tctelecom.com.br (2026-08-16)
+Status: CONCLUÍDA ✅
+
+O cutover de `telecomtc.com.br` travou por **impasse administrativo**: o
+registro.br mostra UOLHOST como Provedor de Serviços (e nessa condição só
+permite visualização), enquanto o painel da UOL classifica o domínio como
+"externo" e diz não conseguir alterar os servidores DNS. Destravar exigiria
+mudar o provedor para NENHUM — mudança administrativa que o usuário optou,
+com razão, por não fazer sem certeza.
+
+**Solução:** publicar em `tctelecom.com.br`, que não tem provedor (titular
+administra direto) e cujo DNS na Microsoft aceita A e CNAME customizados.
+O site foi apontado **sem migrar zona** e **sem tocar em e-mail** — só 2
+registros de site. Ver `docs/ADR-004`.
+
+### O que foi feito
+- `SITE_URL` → `https://tctelecom.com.br` (uma linha; o e-mail de contato
+  `comercial@telecomtc.com.br` **não** mudou — é o endereço real).
+- Liberados os 2 slots de domínio do SWA Free (removidos os de telecomtc,
+  validados mas nunca live) e registrados os dois novos.
+- Usuário criou 2 TXT de validação no M365 (raiz + `_dnsauth.www`), depois
+  o A do apex (`40.67.153.174`) e o CNAME do `www`.
+
+### Verificação (tudo ao vivo, no domínio real)
+| Item | Resultado |
+|---|---|
+| `mail-regression.sh` | verde — MX, SPF, mscid, DKIM ×2, autodiscover, `_dmarc` intactos |
+| `smoke.sh` nos 2 hostnames | **70/70** checagens em 200 |
+| HTTPS apex | 200, cert `CN=tctelecom.com.br` |
+| HTTPS www | 200, cert `CN=www.tctelecom.com.br` |
+| Canonical/sitemap/robots | `tctelecom.com.br` |
+| Conferência visual (4 páginas) | idêntica ao original, sem erro de console |
+
+### Correção de documentação
+Eu havia registrado que "não existe validação por TXT para subdomínio no
+SWA" (a doc pública da Microsoft só documenta CNAME). **É falso** — o
+`dns-txt-token` funcionou para `www` nos dois domínios. Isso permite
+pré-validar o `www` sem derrubá-lo, que é o que tornou esta virada
+zero-downtime. Corrigido em `CLAUDE.md`.
+
+### Pendências
+- **Destino de `telecomtc.com.br`** — hoje ainda serve o WordPress antigo na
+  UOL, gerando conteúdo duplicado. Usuário decide depois. A zona espelho no
+  Azure DNS continua pronta (38 registros, diff zero) caso o impasse do
+  provedor seja resolvido.
+- **Teste real de e-mail** em `@tctelecom.com.br` — enviar e receber de fora
+  (Gmail). Teste sintético não prova entrega.
+- **Trade-off aceito:** o apex vai por registro A (o DNS da Microsoft não
+  tem ALIAS), então é servido de uma única região. O `www` mantém a
+  distribuição global do SWA.

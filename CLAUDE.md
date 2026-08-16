@@ -3,9 +3,17 @@
 ## Estado final (escopo atual)
 Site sai da UOL e vai para o Azure. E-mail NÃO faz parte deste projeto.
 
-4 hostnames -> site no Azure:
-  telecomtc.com.br + www  -> 200 (site real, canônico)
-  tctelecom.com.br + www  -> 301 -> telecomtc.com.br
+**ESTADO ATUAL (2026-08-16): site NO AR em tctelecom.com.br.**
+  tctelecom.com.br       -> 200 (site real, CANÔNICO) — registro A -> 40.67.153.174
+  www.tctelecom.com.br   -> 200 (site real) — CNAME -> SWA
+  telecomtc.com.br + www -> ainda servindo o WordPress antigo na UOL; destino a decidir
+
+A direção do ADR-001 foi REVERTIDA — ver docs/ADR-004. O cutover de
+telecomtc.com.br travou por impasse administrativo (UOLHOST consta como
+Provedor de Serviços no registro.br e trava a edição de DNS; o painel da
+UOL diz que o domínio é "externo"). tctelecom.com.br não tem provedor, e
+seu DNS na Microsoft aceita A/CNAME customizados — então o site foi
+apontado sem migrar zona e sem tocar em e-mail.
 
 DNS de ambos os domínios -> Azure DNS (zonas espelho verbatim, incluindo
 os registros de e-mail de cada domínio).
@@ -21,11 +29,15 @@ de telecomtc.com.br, mantém e-mail @telecomtc.com.br indefinidamente.
 Projeto C do runbook original (onboarding de @telecomtc.com.br no M365,
 cutover de MX, cancelamento da UOL) NÃO será executado. Ver docs/ADR-003.
 
-## Ordem (não inverter)
-A. Site -> Azure, servindo telecomtc.com.br.
-B. Redirect de tctelecom.com.br -> telecomtc.com.br. Validar os 4
-   hostnames. Zona tctelecom.com.br migra para Azure DNS — e-mail dela
-   (Exchange Online) é só espelhado verbatim, nada muda ali.
+## Ordem (revisada em 2026-08-16 — ver ADR-004)
+A. ✅ **CONCLUÍDO** — Site no Azure, servindo `tctelecom.com.br` + `www`,
+   apontado pelo DNS da Microsoft (A no apex + CNAME no www), sem migrar
+   zona e sem tocar em e-mail.
+B. **PENDENTE, sem data** — decidir o destino de `telecomtc.com.br`.
+   Opções: (a) destravar o provedor no registro.br e apontar para o
+   Azure DNS (zona espelho já pronta, 38 registros, diff zero), fazendo
+   o domínio redirecionar para `tctelecom.com.br`; (b) pôr redirect no
+   WordPress antigo; (c) deixar como está.
 
 Portão A→B é por EVIDÊNCIA, não por calendário (decisão 2026-08-16): os
 "7 dias" do runbook existiam para de-riscar o Projeto C, que está fora de
@@ -64,7 +76,8 @@ e-mail principal da empresa, não o site (tctelecom.com.br não tem site).
 | SWA do site | `swa-telecomtc-site` |
 | SWA do redirect | `swa-tctelecom-redirect` |
 | Repositório | `azrhaell/telecomtc-site` |
-| Domínio canônico | `https://telecomtc.com.br` (apex, sem www) |
+| Domínio canônico | `https://tctelecom.com.br` (apex, sem www) — mudou em 2026-08-16, ver ADR-004 |
+| IP estável do SWA (usado no A do apex) | `40.67.153.174` |
 | Hostname do SWA (site), pré-DNS | `gentle-field-06f152f0f.7.azurestaticapps.net` |
 | Zona Azure DNS (site) | `telecomtc.com.br` em `rg-tctelecom`, TTL 300s |
 | Nameservers da zona nova | `ns1-04.azure-dns.com` · `ns2-04.azure-dns.net` · `ns3-04.azure-dns.org` · `ns4-04.azure-dns.info` |
@@ -84,17 +97,24 @@ Web Apps. O SWA valida assim
 
 | Hostname | Método | Registro exigido |
 |---|---|---|
-| **apex** (`telecomtc.com.br`) | TXT (`dns-txt-token`) | TXT com host **`@`** (na raiz), valor = token |
-| **subdomínio** (`www....`) | **CNAME** (`cname-delegation`) | CNAME `www` → hostname do SWA. **Não existe validação por TXT para subdomínio.** |
+| **apex** (`exemplo.com.br`) | TXT (`dns-txt-token`) | TXT com host **`@`** (na raiz), valor = token |
+| **subdomínio** (`www....`) | TXT (`dns-txt-token`) | TXT em **`_dnsauth.www`**, valor = token |
+
+**Correção de 2026-08-16 (testado, não suposto):** a doc pública da
+Microsoft só documenta CNAME para subdomínio, e eu havia registrado aqui
+que "não existe validação por TXT para subdomínio". **É falso** — o
+`dns-txt-token` funciona para `www` também, confirmado nos dois domínios
+(`www.telecomtc.com.br` e `www.tctelecom.com.br` validaram assim). Isso
+importa muito: com TXT dá para **pré-validar o `www` sem derrubá-lo**,
+enquanto o CNAME exigiria apontá-lo ao SWA antes do certificado existir.
 
 Consequências práticas:
 - O TXT do apex convive com o SPF na raiz. Múltiplos TXT na mesma raiz
   são válidos e o SPF é identificado pelo prefixo `v=spf1` — então
   **ACRESCENTAR** o token não quebra SPF. Mas **substituir** quebra.
-- `www` não dá para pré-validar sem já apontar o CNAME para o SWA, o que
-  o derruba antes do certificado existir. Então: pré-validar só o apex,
-  trocar os NS, e registrar o `www` logo depois (com Azure DNS já
-  autoritativo e TTL 300s, valida em minutos).
+- Sequência sem downtime: registrar os dois hostnames no SWA → criar os
+  2 TXT no DNS **atual** → esperar `Ready` + certificado → só então
+  apontar A/CNAME (ou trocar NS). Provar com `curl --resolve` antes.
 
 ### Cache negativo do provedor antigo
 A UOL usa `minttl = 86400` no SOA: um nome que não existia fica marcado
