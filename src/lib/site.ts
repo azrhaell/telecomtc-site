@@ -34,7 +34,10 @@ export const CONTACT = {
   whatsappNumber: '(21) 3031-2343',
   whatsappLink: 'https://wa.me/552130312343',
   whatsappProposalLink: 'https://wa.me/552130312343',
-  email: 'comercial@telecomtc.com.br',
+  // Migrado de @telecomtc.com.br para @tctelecom.com.br em 2026-08-17: os
+  // endereços do domínio antigo serão extintos junto com a UOL (ADR-005), então
+  // publicar o antigo aqui deixaria um endereço morto no rodapé do site.
+  email: 'comercial@tctelecom.com.br',
   address: 'Av. Dom Hélder Câmara, 5644 - 10° Andar - Engenho de Dentro, Rio de Janeiro - RJ, 20771-034',
 } as const;
 
