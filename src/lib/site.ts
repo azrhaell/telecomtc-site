@@ -28,9 +28,12 @@ export const SOCIAL_LINKS = {
 export const CONTACT = {
   phone: '(21) 3081-0053',
   phoneHref: 'tel:+552130810053',
-  whatsappNumber: '(21) 99991-1628',
-  whatsappLink: 'https://wa.link/92ys5g',
-  whatsappProposalLink: 'https://wa.me/message/6O5RDKUKKXJ6A1',
+  // WhatsApp: (21) 3031-2343 — atualizado em 2026-08-16. O 55 é o código do
+  // Brasil, exigido pelo formato wa.me. Não confundir com `phone` acima, que é
+  // o telefone fixo comum e continua sendo outro número.
+  whatsappNumber: '(21) 3031-2343',
+  whatsappLink: 'https://wa.me/552130312343',
+  whatsappProposalLink: 'https://wa.me/552130312343',
   email: 'comercial@telecomtc.com.br',
   address: 'Av. Dom Hélder Câmara, 5644 - 10° Andar - Engenho de Dentro, Rio de Janeiro - RJ, 20771-034',
 } as const;
