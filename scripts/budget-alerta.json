@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "category": "Cost",
+    "amount": 5,
+    "timeGrain": "Monthly",
+    "timePeriod": {
+      "startDate": "2026-08-01T00:00:00Z",
+      "endDate": "2031-08-01T00:00:00Z"
+    },
+    "notifications": {
+      "Aviso50": {
+        "enabled": true,
+        "operator": "GreaterThan",
+        "threshold": 50,
+        "thresholdType": "Actual",
+        "contactEmails": ["marcelo.lobo@tctelecom.com.br"]
+      },
+      "Aviso80": {
+        "enabled": true,
+        "operator": "GreaterThan",
+        "threshold": 80,
+        "thresholdType": "Actual",
+        "contactEmails": ["marcelo.lobo@tctelecom.com.br"]
+      },
+      "Aviso100": {
+        "enabled": true,
+        "operator": "GreaterThan",
+        "threshold": 100,
+        "thresholdType": "Actual",
+        "contactEmails": ["marcelo.lobo@tctelecom.com.br"]
+      },
+      "PrevisaoEstouro": {
+        "enabled": true,
+        "operator": "GreaterThan",
+        "threshold": 100,
+        "thresholdType": "Forecasted",
+        "contactEmails": ["marcelo.lobo@tctelecom.com.br"]
+      }
+    }
+  }
+}
